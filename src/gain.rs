@@ -201,10 +201,10 @@ pub fn run(
                 println!("──────────────────────────────────────────────────────────");
                 for rec in recent {
                     let time = rec.timestamp.format("%m-%d %H:%M");
-                    let cmd_short = if rec.rtk_cmd.len() > 25 {
-                        format!("{}...", &rec.rtk_cmd[..22])
+                    let cmd_short = if rec.otk_cmd.len() > 25 {
+                        format!("{}...", &rec.otk_cmd[..22])
                     } else {
-                        rec.rtk_cmd.clone()
+                        rec.otk_cmd.clone()
                     };
                     // added: tier indicators by savings level
                     let sign = if rec.savings_pct >= 70.0 {

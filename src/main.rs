@@ -1,13 +1,10 @@
 mod aws_cmd;
 mod cargo_cmd;
-mod cc_economics;
-mod ccusage;
 mod config;
 mod container;
 mod curl_cmd;
 mod deps;
 mod diff_cmd;
-mod discover;
 mod display_helpers;
 mod env_cmd;
 mod filter;
@@ -19,14 +16,9 @@ mod git;
 mod go_cmd;
 mod golangci_cmd;
 mod grep_cmd;
-mod hook_audit_cmd;
-mod hook_check;
 mod init;
-mod integrity;
 mod json_cmd;
-mod learn;
 mod lint_cmd;
-mod local_llm;
 mod log_cmd;
 mod ls;
 mod mypy_cmd;
@@ -41,12 +33,10 @@ mod prisma_cmd;
 mod psql_cmd;
 mod pytest_cmd;
 mod read;
-mod rewrite_cmd;
 mod ruff_cmd;
 mod runner;
 mod summary;
 mod tee;
-mod telemetry;
 mod tracking;
 mod tree;
 mod tsc_cmd;
@@ -63,10 +53,10 @@ use std::path::{Path, PathBuf};
 
 #[derive(Parser)]
 #[command(
-    name = "rtk",
+    name = "otk",
     version,
-    about = "Rust Token Killer - Minimize LLM token consumption",
-    long_about = "A high-performance CLI proxy designed to filter and summarize system outputs before they reach your LLM context."
+    about = "OpenClaw Token Killer - Minimize LLM token consumption",
+    long_about = "A high-performance CLI proxy designed to filter and summarize system outputs before they reach your LLM context. Works with OpenClaw agents and Cursor."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -114,18 +104,6 @@ enum Commands {
         /// Show line numbers
         #[arg(short = 'n', long)]
         line_numbers: bool,
-    },
-
-    /// Generate 2-line technical summary (heuristic-based)
-    Smart {
-        /// File to analyze
-        file: PathBuf,
-        /// Model: heuristic
-        #[arg(short, long, default_value = "heuristic")]
-        model: String,
-        /// Force model download
-        #[arg(long)]
-        force_download: bool,
     },
 
     /// Git commands with compact output
@@ -304,33 +282,21 @@ enum Commands {
         extra_args: Vec<String>,
     },
 
-    /// Initialize rtk instructions in CLAUDE.md
+    /// Initialize otk for OpenClaw or Cursor
     Init {
-        /// Add to global ~/.claude/CLAUDE.md instead of local
-        #[arg(short, long)]
-        global: bool,
+        /// Setup for OpenClaw agents (creates shell wrappers + AGENTS.md instructions)
+        #[arg(long, group = "target")]
+        openclaw: bool,
+
+        /// Setup for Cursor CLI (creates .cursor/rules)
+        #[arg(long, group = "target")]
+        cursor: bool,
 
         /// Show current configuration
         #[arg(long)]
         show: bool,
 
-        /// Inject full instructions into CLAUDE.md (legacy mode)
-        #[arg(long = "claude-md", group = "mode")]
-        claude_md: bool,
-
-        /// Hook only, no RTK.md
-        #[arg(long = "hook-only", group = "mode")]
-        hook_only: bool,
-
-        /// Auto-patch settings.json without prompting
-        #[arg(long = "auto-patch", group = "patch")]
-        auto_patch: bool,
-
-        /// Skip settings.json patching (print manual instructions)
-        #[arg(long = "no-patch", group = "patch")]
-        no_patch: bool,
-
-        /// Remove all RTK artifacts (hook, RTK.md, CLAUDE.md reference, settings.json entry)
+        /// Remove all OTK artifacts
         #[arg(long)]
         uninstall: bool,
     },
@@ -389,25 +355,6 @@ enum Commands {
         /// Show parse failure log (commands that fell back to raw execution)
         #[arg(short = 'F', long)]
         failures: bool,
-    },
-
-    /// Claude Code economics: spending (ccusage) vs savings (rtk) analysis
-    CcEconomics {
-        /// Show detailed daily breakdown
-        #[arg(short, long)]
-        daily: bool,
-        /// Show weekly breakdown
-        #[arg(short, long)]
-        weekly: bool,
-        /// Show monthly breakdown
-        #[arg(short, long)]
-        monthly: bool,
-        /// Show all time breakdowns (daily + weekly + monthly)
-        #[arg(short, long)]
-        all: bool,
-        /// Output format: text, json, csv
-        #[arg(short, long, default_value = "text")]
-        format: String,
     },
 
     /// Show or create configuration file
@@ -498,59 +445,12 @@ enum Commands {
         args: Vec<String>,
     },
 
-    /// Discover missed RTK savings from Claude Code history
-    Discover {
-        /// Filter by project path (substring match)
-        #[arg(short, long)]
-        project: Option<String>,
-        /// Max commands per section
-        #[arg(short, long, default_value = "15")]
-        limit: usize,
-        /// Scan all projects (default: current project only)
-        #[arg(short, long)]
-        all: bool,
-        /// Limit to sessions from last N days
-        #[arg(short, long, default_value = "30")]
-        since: u64,
-        /// Output format: text, json
-        #[arg(short, long, default_value = "text")]
-        format: String,
-    },
-
-    /// Learn CLI corrections from Claude Code error history
-    Learn {
-        /// Filter by project path (substring match)
-        #[arg(short, long)]
-        project: Option<String>,
-        /// Scan all projects (default: current project only)
-        #[arg(short, long)]
-        all: bool,
-        /// Limit to sessions from last N days
-        #[arg(short, long, default_value = "30")]
-        since: u64,
-        /// Output format: text, json
-        #[arg(short, long, default_value = "text")]
-        format: String,
-        /// Generate .claude/rules/cli-corrections.md file
-        #[arg(short, long)]
-        write_rules: bool,
-        /// Minimum confidence threshold (0.0-1.0)
-        #[arg(long, default_value = "0.6")]
-        min_confidence: f64,
-        /// Minimum occurrences to include in report
-        #[arg(long, default_value = "1")]
-        min_occurrences: usize,
-    },
-
     /// Execute command without filtering but track usage
     Proxy {
         /// Command and arguments to execute
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<OsString>,
     },
-
-    /// Verify hook integrity (SHA-256 check)
-    Verify,
 
     /// Ruff linter/formatter with compact output
     Ruff {
@@ -594,25 +494,6 @@ enum Commands {
         args: Vec<String>,
     },
 
-    /// Show hook rewrite audit metrics (requires RTK_HOOK_AUDIT=1)
-    #[command(name = "hook-audit")]
-    HookAudit {
-        /// Show entries from last N days (0 = all time)
-        #[arg(short, long, default_value = "7")]
-        since: u64,
-    },
-
-    /// Rewrite a raw command to its RTK equivalent (single source of truth for hooks)
-    ///
-    /// Exits 0 and prints the rewritten command if supported.
-    /// Exits 1 with no output if the command has no RTK equivalent.
-    ///
-    /// Used by Claude Code, Gemini CLI, and other LLM hooks:
-    ///   REWRITTEN=$(rtk rewrite "$CMD") || exit 0
-    Rewrite {
-        /// Raw command to rewrite (e.g. "git status", "cargo test && git push")
-        cmd: String,
-    },
 }
 
 #[derive(Subcommand)]
@@ -928,34 +809,30 @@ enum GoCommands {
     Other(Vec<OsString>),
 }
 
-/// RTK-only subcommands that should never fall back to raw execution.
+/// OTK-only subcommands that should never fall back to raw execution.
 /// If Clap fails to parse these, show the Clap error directly.
-const RTK_META_COMMANDS: &[&str] = &[
+const OTK_META_COMMANDS: &[&str] = &[
     "gain",
-    "discover",
-    "learn",
     "init",
     "config",
     "proxy",
-    "hook-audit",
-    "cc-economics",
 ];
 
 fn run_fallback(parse_error: clap::Error) -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
 
-    // No args → show Clap's error (user ran just "rtk" with bad syntax)
+    // No args → show Clap's error (user ran just "otk" with bad syntax)
     if args.is_empty() {
         parse_error.exit();
     }
 
-    // RTK meta-commands should never fall back to raw execution.
-    // e.g. `rtk gain --badtypo` should show Clap's error, not try to run `gain` from $PATH.
-    if RTK_META_COMMANDS.contains(&args[0].as_str()) {
+    // OTK meta-commands should never fall back to raw execution.
+    // e.g. `otk gain --badtypo` should show Clap's error, not try to run `gain` from $PATH.
+    if OTK_META_COMMANDS.contains(&args[0].as_str()) {
         parse_error.exit();
     }
 
-    eprintln!("[rtk: parse failed, running raw]");
+    eprintln!("[otk: parse failed, running raw]");
 
     let raw_command = args.join(" ");
     let error_message = utils::strip_ansi(&parse_error.to_string());
@@ -972,7 +849,7 @@ fn run_fallback(parse_error: clap::Error) -> Result<()> {
 
     match status {
         Ok(s) => {
-            timer.track_passthrough(&raw_command, &format!("rtk fallback: {}", raw_command));
+            timer.track_passthrough(&raw_command, &format!("otk fallback: {}", raw_command));
 
             tracking::record_parse_failure_silent(&raw_command, &error_message, true);
 
@@ -983,7 +860,7 @@ fn run_fallback(parse_error: clap::Error) -> Result<()> {
         Err(e) => {
             tracking::record_parse_failure_silent(&raw_command, &error_message, false);
             // Command not found or other OS error — show Clap's original error
-            eprintln!("[rtk: fallback failed: {}]", e);
+            eprintln!("[otk: fallback failed: {}]", e);
             parse_error.exit();
         }
     }
@@ -992,12 +869,6 @@ fn run_fallback(parse_error: clap::Error) -> Result<()> {
 }
 
 fn main() -> Result<()> {
-    // Fire-and-forget telemetry ping (1/day, non-blocking)
-    telemetry::maybe_ping();
-
-    // Warn if installed hook is outdated (1/day, non-blocking)
-    hook_check::maybe_warn();
-
     let cli = match Cli::try_parse() {
         Ok(cli) => cli,
         Err(e) => {
@@ -1007,13 +878,6 @@ fn main() -> Result<()> {
             return run_fallback(e);
         }
     };
-
-    // Runtime integrity check for operational commands.
-    // Meta commands (init, gain, verify, config, etc.) skip the check
-    // because they don't go through the hook pipeline.
-    if is_operational_command(&cli.command) {
-        integrity::runtime_check()?;
-    }
 
     match cli.command {
         Commands::Ls { args } => {
@@ -1035,14 +899,6 @@ fn main() -> Result<()> {
             } else {
                 read::run(&file, level, max_lines, line_numbers, cli.verbose)?;
             }
-        }
-
-        Commands::Smart {
-            file,
-            model,
-            force_download,
-        } => {
-            local_llm::run(&file, &model, force_download, cli.verbose)?;
         }
 
         Commands::Git {
@@ -1364,27 +1220,25 @@ fn main() -> Result<()> {
         }
 
         Commands::Init {
-            global,
+            openclaw,
+            cursor,
             show,
-            claude_md,
-            hook_only,
-            auto_patch,
-            no_patch,
             uninstall,
         } => {
             if show {
                 init::show_config()?;
             } else if uninstall {
-                init::uninstall(global, cli.verbose)?;
+                init::uninstall(cli.verbose)?;
             } else {
-                let patch_mode = if auto_patch {
-                    init::PatchMode::Auto
-                } else if no_patch {
-                    init::PatchMode::Skip
+                let target = if openclaw {
+                    init::InitTarget::OpenClaw
+                } else if cursor {
+                    init::InitTarget::Cursor
                 } else {
-                    init::PatchMode::Ask
+                    // Default to OpenClaw mode
+                    init::InitTarget::OpenClaw
                 };
-                init::run(global, claude_md, hook_only, patch_mode, cli.verbose)?;
+                init::run(target, cli.verbose)?;
             }
         }
 
@@ -1427,16 +1281,6 @@ fn main() -> Result<()> {
                 failures,
                 cli.verbose,
             )?;
-        }
-
-        Commands::CcEconomics {
-            daily,
-            weekly,
-            monthly,
-            all,
-            format,
-        } => {
-            cc_economics::run(daily, weekly, monthly, all, &format, cli.verbose)?;
         }
 
         Commands::Config { create } => {
@@ -1548,36 +1392,6 @@ fn main() -> Result<()> {
             curl_cmd::run(&args, cli.verbose)?;
         }
 
-        Commands::Discover {
-            project,
-            limit,
-            all,
-            since,
-            format,
-        } => {
-            discover::run(project.as_deref(), all, since, limit, &format, cli.verbose)?;
-        }
-
-        Commands::Learn {
-            project,
-            all,
-            since,
-            format,
-            write_rules,
-            min_confidence,
-            min_occurrences,
-        } => {
-            learn::run(
-                project,
-                all,
-                since,
-                format,
-                write_rules,
-                min_confidence,
-                min_occurrences,
-            )?;
-        }
-
         Commands::Npx { args } => {
             if args.is_empty() {
                 anyhow::bail!("npx requires a command argument");
@@ -1621,7 +1435,7 @@ fn main() -> Result<()> {
                                 let args_str = args.join(" ");
                                 timer.track_passthrough(
                                     &format!("npx {}", args_str),
-                                    &format!("rtk npx {} (passthrough)", args_str),
+                                    &format!("otk npx {} (passthrough)", args_str),
                                 );
                                 if !status.success() {
                                     std::process::exit(status.code().unwrap_or(1));
@@ -1634,7 +1448,7 @@ fn main() -> Result<()> {
                             .arg("prisma")
                             .status()
                             .context("Failed to run npx prisma")?;
-                        timer.track_passthrough("npx prisma", "rtk npx prisma (passthrough)");
+                        timer.track_passthrough("npx prisma", "otk npx prisma (passthrough)");
                         if !status.success() {
                             std::process::exit(status.code().unwrap_or(1));
                         }
@@ -1691,20 +1505,12 @@ fn main() -> Result<()> {
             golangci_cmd::run(&args, cli.verbose)?;
         }
 
-        Commands::HookAudit { since } => {
-            hook_audit_cmd::run(since, cli.verbose)?;
-        }
-
-        Commands::Rewrite { cmd } => {
-            rewrite_cmd::run(&cmd)?;
-        }
-
         Commands::Proxy { args } => {
             use std::process::Command;
 
             if args.is_empty() {
                 anyhow::bail!(
-                    "proxy requires a command to execute\nUsage: rtk proxy <command> [args...]"
+                    "proxy requires a command to execute\nUsage: otk proxy <command> [args...]"
                 );
             }
 
@@ -1736,7 +1542,7 @@ fn main() -> Result<()> {
             // Track usage (input = output since no filtering)
             timer.track(
                 &format!("{} {}", cmd_name, cmd_args.join(" ")),
-                &format!("rtk proxy {} {}", cmd_name, cmd_args.join(" ")),
+                &format!("otk proxy {} {}", cmd_name, cmd_args.join(" ")),
                 &full_output,
                 &full_output,
             );
@@ -1747,64 +1553,9 @@ fn main() -> Result<()> {
             }
         }
 
-        Commands::Verify => {
-            integrity::run_verify(cli.verbose)?;
-        }
     }
 
     Ok(())
-}
-
-/// Returns true for commands that are invoked via the hook pipeline
-/// (i.e., commands that process rewritten shell commands).
-/// Meta commands (init, gain, verify, etc.) are excluded because
-/// they are run directly by the user, not through the hook.
-/// Returns true for commands that go through the hook pipeline
-/// and therefore require integrity verification.
-///
-/// SECURITY: whitelist pattern — new commands are NOT integrity-checked
-/// until explicitly added here. A forgotten command fails open (no check)
-/// rather than creating false confidence about what's protected.
-fn is_operational_command(cmd: &Commands) -> bool {
-    matches!(
-        cmd,
-        Commands::Ls { .. }
-            | Commands::Tree { .. }
-            | Commands::Read { .. }
-            | Commands::Smart { .. }
-            | Commands::Git { .. }
-            | Commands::Gh { .. }
-            | Commands::Pnpm { .. }
-            | Commands::Err { .. }
-            | Commands::Test { .. }
-            | Commands::Json { .. }
-            | Commands::Deps { .. }
-            | Commands::Env { .. }
-            | Commands::Find { .. }
-            | Commands::Diff { .. }
-            | Commands::Log { .. }
-            | Commands::Docker { .. }
-            | Commands::Kubectl { .. }
-            | Commands::Summary { .. }
-            | Commands::Grep { .. }
-            | Commands::Wget { .. }
-            | Commands::Vitest { .. }
-            | Commands::Prisma { .. }
-            | Commands::Tsc { .. }
-            | Commands::Next { .. }
-            | Commands::Lint { .. }
-            | Commands::Prettier { .. }
-            | Commands::Playwright { .. }
-            | Commands::Cargo { .. }
-            | Commands::Npm { .. }
-            | Commands::Npx { .. }
-            | Commands::Curl { .. }
-            | Commands::Ruff { .. }
-            | Commands::Pytest { .. }
-            | Commands::Pip { .. }
-            | Commands::Go { .. }
-            | Commands::GolangciLint { .. }
-    )
 }
 
 #[cfg(test)]
@@ -1814,7 +1565,7 @@ mod tests {
 
     #[test]
     fn test_git_commit_single_message() {
-        let cli = Cli::try_parse_from(["rtk", "git", "commit", "-m", "fix: typo"]).unwrap();
+        let cli = Cli::try_parse_from(["otk", "git", "commit", "-m", "fix: typo"]).unwrap();
         match cli.command {
             Commands::Git {
                 command: GitCommands::Commit { message },
@@ -1829,7 +1580,7 @@ mod tests {
     #[test]
     fn test_git_commit_multiple_messages() {
         let cli = Cli::try_parse_from([
-            "rtk",
+            "otk",
             "git",
             "commit",
             "-m",
@@ -1852,7 +1603,7 @@ mod tests {
     #[test]
     fn test_git_global_options_parsing() {
         let cli =
-            Cli::try_parse_from(["rtk", "git", "--no-pager", "--no-optional-locks", "status"])
+            Cli::try_parse_from(["otk", "git", "--no-pager", "--no-optional-locks", "status"])
                 .unwrap();
         match cli.command {
             Commands::Git {
@@ -1874,7 +1625,7 @@ mod tests {
     #[test]
     fn test_git_commit_long_flag_multiple() {
         let cli = Cli::try_parse_from([
-            "rtk",
+            "otk",
             "git",
             "commit",
             "--message",
@@ -1898,13 +1649,13 @@ mod tests {
 
     #[test]
     fn test_try_parse_valid_git_status() {
-        let result = Cli::try_parse_from(["rtk", "git", "status"]);
+        let result = Cli::try_parse_from(["otk", "git", "status"]);
         assert!(result.is_ok(), "git status should parse successfully");
     }
 
     #[test]
     fn test_try_parse_help_is_display_help() {
-        match Cli::try_parse_from(["rtk", "--help"]) {
+        match Cli::try_parse_from(["otk", "--help"]) {
             Err(e) => assert_eq!(e.kind(), ErrorKind::DisplayHelp),
             Ok(_) => panic!("Expected DisplayHelp error"),
         }
@@ -1912,7 +1663,7 @@ mod tests {
 
     #[test]
     fn test_try_parse_version_is_display_version() {
-        match Cli::try_parse_from(["rtk", "--version"]) {
+        match Cli::try_parse_from(["otk", "--version"]) {
             Err(e) => assert_eq!(e.kind(), ErrorKind::DisplayVersion),
             Ok(_) => panic!("Expected DisplayVersion error"),
         }
@@ -1920,7 +1671,7 @@ mod tests {
 
     #[test]
     fn test_try_parse_unknown_subcommand_is_error() {
-        match Cli::try_parse_from(["rtk", "nonexistent-command"]) {
+        match Cli::try_parse_from(["otk", "nonexistent-command"]) {
             Err(e) => assert!(!matches!(
                 e.kind(),
                 ErrorKind::DisplayHelp | ErrorKind::DisplayVersion
@@ -1932,13 +1683,13 @@ mod tests {
     #[test]
     fn test_try_parse_git_with_dash_c_succeeds() {
         // git -C /path status is now supported via global options
-        let result = Cli::try_parse_from(["rtk", "git", "-C", "/path", "status"]);
+        let result = Cli::try_parse_from(["otk", "git", "-C", "/path", "status"]);
         assert!(result.is_ok(), "git -C should parse successfully");
     }
 
     #[test]
     fn test_gain_failures_flag_parses() {
-        let result = Cli::try_parse_from(["rtk", "gain", "--failures"]);
+        let result = Cli::try_parse_from(["otk", "gain", "--failures"]);
         assert!(result.is_ok());
         if let Ok(cli) = result {
             match cli.command {
@@ -1950,7 +1701,7 @@ mod tests {
 
     #[test]
     fn test_gain_failures_short_flag_parses() {
-        let result = Cli::try_parse_from(["rtk", "gain", "-F"]);
+        let result = Cli::try_parse_from(["otk", "gain", "-F"]);
         assert!(result.is_ok());
         if let Ok(cli) = result {
             match cli.command {
@@ -1962,13 +1713,13 @@ mod tests {
 
     #[test]
     fn test_meta_commands_reject_bad_flags() {
-        // RTK meta-commands should produce parse errors (not fall through to raw execution).
+        // OTK meta-commands should produce parse errors (not fall through to raw execution).
         // Skip "proxy" because it uses trailing_var_arg (accepts any args by design).
-        for cmd in RTK_META_COMMANDS {
+        for cmd in OTK_META_COMMANDS {
             if *cmd == "proxy" {
                 continue;
             }
-            let result = Cli::try_parse_from(["rtk", cmd, "--nonexistent-flag-xyz"]);
+            let result = Cli::try_parse_from(["otk", cmd, "--nonexistent-flag-xyz"]);
             assert!(
                 result.is_err(),
                 "Meta-command '{}' with bad flag should fail to parse",
@@ -1981,14 +1732,10 @@ mod tests {
     fn test_meta_command_list_is_complete() {
         // Verify all meta-commands are in the guard list by checking they parse with valid syntax
         let meta_cmds_that_parse = [
-            vec!["rtk", "gain"],
-            vec!["rtk", "discover"],
-            vec!["rtk", "learn"],
-            vec!["rtk", "init"],
-            vec!["rtk", "config"],
-            vec!["rtk", "proxy", "echo", "hi"],
-            vec!["rtk", "hook-audit"],
-            vec!["rtk", "cc-economics"],
+            vec!["otk", "gain"],
+            vec!["otk", "init"],
+            vec!["otk", "config"],
+            vec!["otk", "proxy", "echo", "hi"],
         ];
         for args in &meta_cmds_that_parse {
             let result = Cli::try_parse_from(args.iter());
