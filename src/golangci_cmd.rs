@@ -74,7 +74,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("golangci-lint {}", args.join(" ")),
-        &format!("rtk golangci-lint {}", args.join(" ")),
+        &format!("otk golangci-lint {}", args.join(" ")),
         &raw,
         &filtered,
     );

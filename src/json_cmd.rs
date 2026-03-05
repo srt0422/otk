@@ -20,7 +20,7 @@ pub fn run(file: &Path, max_depth: usize, verbose: u8) -> Result<()> {
     println!("{}", schema);
     timer.track(
         &format!("cat {}", file.display()),
-        "rtk json",
+        "otk json",
         &content,
         &schema,
     );
@@ -43,7 +43,7 @@ pub fn run_stdin(max_depth: usize, verbose: u8) -> Result<()> {
 
     let schema = filter_json_string(&content, max_depth)?;
     println!("{}", schema);
-    timer.track("cat - (stdin)", "rtk json -", &content, &schema);
+    timer.track("cat - (stdin)", "otk json -", &content, &schema);
     Ok(())
 }
 

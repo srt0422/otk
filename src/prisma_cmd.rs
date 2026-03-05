@@ -71,7 +71,7 @@ fn run_generate(args: &[String], verbose: u8) -> Result<()> {
 
     println!("{}", filtered);
 
-    timer.track("prisma generate", "rtk prisma generate", &raw, &filtered);
+    timer.track("prisma generate", "otk prisma generate", &raw, &filtered);
 
     Ok(())
 }
@@ -127,7 +127,7 @@ fn run_migrate(subcommand: MigrateSubcommand, args: &[String], verbose: u8) -> R
 
     println!("{}", filtered);
 
-    timer.track(cmd_name, &format!("rtk {}", cmd_name), &raw, &filtered);
+    timer.track(cmd_name, &format!("otk {}", cmd_name), &raw, &filtered);
 
     Ok(())
 }
@@ -160,7 +160,7 @@ fn run_db_push(args: &[String], verbose: u8) -> Result<()> {
 
     println!("{}", filtered);
 
-    timer.track("prisma db push", "rtk prisma db push", &raw, &filtered);
+    timer.track("prisma db push", "otk prisma db push", &raw, &filtered);
 
     Ok(())
 }

@@ -217,7 +217,7 @@ enum Commands {
 
     /// Find files with compact tree output (accepts native find flags like -name, -type)
     Find {
-        /// All find arguments (supports both RTK and native find syntax)
+        /// All find arguments (supports both OTK and native find syntax)
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },

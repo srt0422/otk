@@ -59,7 +59,7 @@ pub fn run(
 
     if summary.total_commands == 0 {
         println!("No tracking data yet.");
-        println!("Run some rtk commands to start tracking savings.");
+        println!("Run some otk commands to start tracking savings.");
         return Ok(());
     }
 
@@ -67,9 +67,9 @@ pub fn run(
     if !daily && !weekly && !monthly && !all {
         // added: scope-aware styled header // changed: merged upstream styled + project scope
         let title = if project_scope.is_some() {
-            "RTK Token Savings (Project Scope)"
+            "OTK Token Savings (Project Scope)"
         } else {
-            "RTK Token Savings (Global Scope)"
+            "OTK Token Savings (Global Scope)"
         };
         println!("{}", styled(title, true));
         println!("{}", "═".repeat(60));
@@ -601,7 +601,7 @@ fn show_failures(tracker: &Tracker) -> Result<()> {
         return Ok(());
     }
 
-    println!("{}", styled("RTK Parse Failures", true));
+    println!("{}", styled("OTK Parse Failures", true));
     println!("{}", "═".repeat(60));
     println!();
 

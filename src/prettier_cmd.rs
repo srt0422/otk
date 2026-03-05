@@ -30,7 +30,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("prettier {}", args.join(" ")),
-        &format!("rtk prettier {}", args.join(" ")),
+        &format!("otk prettier {}", args.join(" ")),
         &raw,
         &filtered,
     );

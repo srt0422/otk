@@ -60,7 +60,7 @@ pub fn run(
         println!("{}", msg);
         timer.track(
             &format!("grep -rn '{}' {}", pattern, path),
-            "rtk grep",
+            "otk grep",
             &raw_output,
             &msg,
         );
@@ -91,8 +91,8 @@ pub fn run(
         by_file.entry(file).or_default().push((line_num, cleaned));
     }
 
-    let mut rtk_output = String::new();
-    rtk_output.push_str(&format!("🔍 {} in {}F:\n\n", total, by_file.len()));
+    let mut otk_output = String::new();
+    otk_output.push_str(&format!("🔍 {} in {}F:\n\n", total, by_file.len()));
 
     let mut shown = 0;
     let mut files: Vec<_> = by_file.iter().collect();
@@ -104,10 +104,10 @@ pub fn run(
         }
 
         let file_display = compact_path(file);
-        rtk_output.push_str(&format!("📄 {} ({}):\n", file_display, matches.len()));
+        otk_output.push_str(&format!("📄 {} ({}):\n", file_display, matches.len()));
 
         for (line_num, content) in matches.iter().take(10) {
-            rtk_output.push_str(&format!("  {:>4}: {}\n", line_num, content));
+            otk_output.push_str(&format!("  {:>4}: {}\n", line_num, content));
             shown += 1;
             if shown >= max_results {
                 break;
@@ -115,21 +115,21 @@ pub fn run(
         }
 
         if matches.len() > 10 {
-            rtk_output.push_str(&format!("  +{}\n", matches.len() - 10));
+            otk_output.push_str(&format!("  +{}\n", matches.len() - 10));
         }
-        rtk_output.push('\n');
+        otk_output.push('\n');
     }
 
     if total > shown {
-        rtk_output.push_str(&format!("... +{}\n", total - shown));
+        otk_output.push_str(&format!("... +{}\n", total - shown));
     }
 
-    print!("{}", rtk_output);
+    print!("{}", otk_output);
     timer.track(
         &format!("grep -rn '{}' {}", pattern, path),
-        "rtk grep",
+        "otk grep",
         &raw_output,
-        &rtk_output,
+        &otk_output,
     );
 
     if exit_code != 0 {

@@ -1,18 +1,18 @@
 # RTK Troubleshooting Guide
 
-## Problem: "rtk gain" command not found
+## Problem: "otk gain" command not found
 
 ### Symptom
 ```bash
 $ rtk --version
 rtk 1.0.0  # (or similar)
 
-$ rtk gain
+$ otk gain
 rtk: 'gain' is not a rtk command. See 'rtk --help'.
 ```
 
 ### Root Cause
-You installed the **wrong rtk package**. You have **Rust Type Kit** (reachingforthejack/rtk) instead of **Rust Token Killer** (rtk-ai/rtk).
+You installed the **wrong rtk package**. You have **Rust Type Kit** (reachingforthejack/rtk) instead of **Rust Token Killer** (openclaw/otk).
 
 ### Solution
 
@@ -25,21 +25,21 @@ cargo uninstall rtk
 
 #### Quick Install (Linux/macOS)
 ```bash
-curl -fsSL https://github.com/rtk-ai/rtk/blob/master/install.sh | sh
+curl -fsSL https://github.com/openclaw/otk/blob/master/install.sh | sh
 ```
 
 #### Alternative: Manual Installation
 ```bash
-cargo install --git https://github.com/rtk-ai/rtk
+cargo install --git https://github.com/openclaw/otk
 ```
 
 **3. Verify installation:**
 ```bash
 rtk --version
-rtk gain  # MUST show token savings stats, not error
+otk gain  # MUST show token savings stats, not error
 ```
 
-If `rtk gain` now works, installation is correct.
+If `otk gain` now works, installation is correct.
 
 ---
 
@@ -49,14 +49,14 @@ If `rtk gain` now works, installation is correct.
 
 | Project | Repository | Purpose | Key Command |
 |---------|-----------|---------|-------------|
-| **Rust Token Killer** ✅ | rtk-ai/rtk | LLM token optimizer for Claude Code | `rtk gain` |
+| **Rust Token Killer** ✅ | openclaw/otk | LLM token optimizer for AI coding | `otk gain` |
 | **Rust Type Kit** ❌ | reachingforthejack/rtk | Rust codebase query and type generator | `rtk query` |
 
 ### How to Identify Which One You Have
 
 ```bash
 # Check if "gain" command exists
-rtk gain
+otk gain
 
 # Token Killer → Shows token savings stats
 # Type Kit → Error: "gain is not a rtk command"
@@ -76,35 +76,35 @@ If **Rust Type Kit** is published to crates.io under the name `rtk`, running `ca
 
 ```bash
 # CORRECT - Token Killer
-cargo install --git https://github.com/rtk-ai/rtk
+cargo install --git https://github.com/openclaw/otk
 
 # OR install from fork
-git clone https://github.com/rtk-ai/rtk.git
+git clone https://github.com/openclaw/otk.git
 cd rtk && git checkout feat/all-features
 cargo install --path . --force
 ```
 
 **After any installation, ALWAYS verify:**
 ```bash
-rtk gain  # Must work if you want Token Killer
+otk gain  # Must work if you want Token Killer
 ```
 
 ---
 
-## Problem: RTK not working in Claude Code
+## Problem: RTK not working in AI coding
 
 ### Symptom
-Claude Code doesn't seem to be using rtk, outputs are verbose.
+AI coding doesn't seem to be using rtk, outputs are verbose.
 
 ### Checklist
 
 **1. Verify rtk is installed and correct:**
 ```bash
 rtk --version
-rtk gain  # Must show stats
+otk gain  # Must show stats
 ```
 
-**2. Initialize rtk for Claude Code:**
+**2. Initialize rtk for AI coding:**
 ```bash
 # Global (all projects)
 rtk init --global
@@ -114,13 +114,13 @@ cd /your/project
 rtk init
 ```
 
-**3. Verify CLAUDE.md file exists:**
+**3. Verify AGENTS.md file exists:**
 ```bash
 # Check global
-cat ~/.claude/CLAUDE.md | grep rtk
+cat ~/.openclaw/AGENTS.md | grep rtk
 
 # Check project
-cat ./CLAUDE.md | grep rtk
+cat ./AGENTS.md | grep rtk
 ```
 
 **4. Install auto-rewrite hook (recommended for automatic RTK usage):**
@@ -129,8 +129,8 @@ cat ./CLAUDE.md | grep rtk
 ```bash
 rtk init -g
 # → Installs hook + RTK.md automatically
-# → Follow printed instructions to add hook to ~/.claude/settings.json
-# → Restart Claude Code
+# → Follow printed instructions to add hook to ~/.openclaw/settings.json
+# → Restart AI coding
 
 # Verify installation
 rtk init --show  # Should show "✅ Hook: executable, with guards"
@@ -138,13 +138,13 @@ rtk init --show  # Should show "✅ Hook: executable, with guards"
 
 **Option B: Manual (fallback)**
 ```bash
-# Copy hook to Claude Code hooks directory
-mkdir -p ~/.claude/hooks
-cp .claude/hooks/rtk-rewrite.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/rtk-rewrite.sh
+# Copy hook to AI coding hooks directory
+mkdir -p ~/.openclaw/hooks
+cp .openclaw/hooks/rtk-rewrite.sh ~/.openclaw/hooks/
+chmod +x ~/.openclaw/hooks/rtk-rewrite.sh
 ```
 
-Then add to `~/.claude/settings.json` (replace `~` with full path):
+Then add to `~/.openclaw/settings.json` (replace `~` with full path):
 ```json
 {
   "hooks": {
@@ -154,7 +154,7 @@ Then add to `~/.claude/settings.json` (replace `~` with full path):
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/yourname/.claude/hooks/rtk-rewrite.sh"
+            "command": "/Users/yourname/.openclaw/hooks/rtk-rewrite.sh"
           }
         ]
       }
@@ -163,7 +163,7 @@ Then add to `~/.claude/settings.json` (replace `~` with full path):
 }
 ```
 
-**Note**: Use absolute path in `settings.json`, not `~/.claude/...`
+**Note**: Use absolute path in `settings.json`, not `~/.openclaw/...`
 
 ---
 
@@ -216,7 +216,7 @@ source ~/.bashrc  # or ~/.zshrc or restart terminal
 ```bash
 which rtk
 rtk --version
-rtk gain
+otk gain
 ```
 
 ---
@@ -250,15 +250,15 @@ rustc --version  # Should be 1.70+ for most features
 ```
 
 **4. If still fails, report issue:**
-- GitHub: https://github.com/rtk-ai/rtk/issues
+- GitHub: https://github.com/openclaw/otk/issues
 
 ---
 
 ## Need More Help?
 
 **Report issues:**
-- Fork-specific: https://github.com/rtk-ai/rtk/issues
-- Upstream: https://github.com/rtk-ai/rtk/issues
+- Fork-specific: https://github.com/openclaw/otk/issues
+- Upstream: https://github.com/openclaw/otk/issues
 
 **Run the diagnostic script:**
 ```bash
@@ -270,7 +270,7 @@ This script will check:
 - ✅ RTK installed and in PATH
 - ✅ Correct version (Token Killer, not Type Kit)
 - ✅ Available features (pnpm, vitest, next, etc.)
-- ✅ Claude Code integration (CLAUDE.md files)
+- ✅ AI coding integration (AGENTS.md files)
 - ✅ Auto-rewrite hook status
 
 The script provides specific fix commands for any issues found.

@@ -67,7 +67,7 @@ fn run_diff(
         .iter()
         .any(|arg| arg == "--stat" || arg == "--numstat" || arg == "--shortstat");
 
-    // Check if user wants compact diff (default RTK behavior)
+    // Check if user wants compact diff (default OTK behavior)
     let wants_compact = !args.iter().any(|arg| arg == "--no-compact");
 
     if wants_stat || !wants_compact {
@@ -91,7 +91,7 @@ fn run_diff(
 
         timer.track(
             &format!("git diff {}", args.join(" ")),
-            &format!("rtk git diff {} (passthrough)", args.join(" ")),
+            &format!("otk git diff {} (passthrough)", args.join(" ")),
             &stdout,
             &stdout,
         );
@@ -99,7 +99,7 @@ fn run_diff(
         return Ok(());
     }
 
-    // Default RTK behavior: stat first, then compacted diff
+    // Default OTK behavior: stat first, then compacted diff
     let mut cmd = git_cmd(global_args);
     cmd.arg("diff").arg("--stat");
 
@@ -138,7 +138,7 @@ fn run_diff(
 
     timer.track(
         &format!("git diff {}", args.join(" ")),
-        &format!("rtk git diff {}", args.join(" ")),
+        &format!("otk git diff {}", args.join(" ")),
         &format!("{}\n{}", stat_stdout, diff_stdout),
         &final_output,
     );
@@ -188,7 +188,7 @@ fn run_show(
 
         timer.track(
             &format!("git show {}", args.join(" ")),
-            &format!("rtk git show {} (passthrough)", args.join(" ")),
+            &format!("otk git show {} (passthrough)", args.join(" ")),
             &stdout,
             &stdout,
         );
@@ -257,7 +257,7 @@ fn run_show(
 
     timer.track(
         &format!("git show {}", args.join(" ")),
-        &format!("rtk git show {}", args.join(" ")),
+        &format!("otk git show {}", args.join(" ")),
         &raw_output,
         &final_output,
     );
@@ -357,7 +357,7 @@ fn run_log(
         arg.starts_with('-') && arg.chars().nth(1).map_or(false, |c| c.is_ascii_digit())
     });
 
-    // Apply RTK defaults only if user didn't specify them
+    // Apply OTK defaults only if user didn't specify them
     if !has_format_flag {
         cmd.args(["--pretty=format:%h %s (%ar) <%an>"]);
     }
@@ -409,7 +409,7 @@ fn run_log(
 
     timer.track(
         &format!("git log {}", args.join(" ")),
-        &format!("rtk git log {}", args.join(" ")),
+        &format!("otk git log {}", args.join(" ")),
         &stdout,
         &filtered,
     );
@@ -436,7 +436,7 @@ fn filter_log_output(output: &str, limit: usize) -> String {
     capped.join("\n").trim().to_string()
 }
 
-/// Format porcelain output into compact RTK status display
+/// Format porcelain output into compact OTK status display
 fn format_status_output(porcelain: &str) -> String {
     let lines: Vec<&str> = porcelain.lines().collect();
 
@@ -593,7 +593,7 @@ fn run_status(args: &[String], verbose: u8, global_args: &[String]) -> Result<()
 
         timer.track(
             &format!("git status {}", args.join(" ")),
-            &format!("rtk git status {}", args.join(" ")),
+            &format!("otk git status {}", args.join(" ")),
             &stdout,
             &filtered,
         );
@@ -601,7 +601,7 @@ fn run_status(args: &[String], verbose: u8, global_args: &[String]) -> Result<()
         return Ok(());
     }
 
-    // Default RTK compact mode (no args provided)
+    // Default OTK compact mode (no args provided)
     // Get raw git status for tracking
     let raw_output = git_cmd(global_args)
         .args(["status"])
@@ -626,7 +626,7 @@ fn run_status(args: &[String], verbose: u8, global_args: &[String]) -> Result<()
     println!("{}", formatted);
 
     // Track for statistics
-    timer.track("git status", "rtk git status", &raw_output, &formatted);
+    timer.track("git status", "otk git status", &raw_output, &formatted);
 
     Ok(())
 }
@@ -682,7 +682,7 @@ fn run_add(args: &[String], verbose: u8, global_args: &[String]) -> Result<()> {
 
         timer.track(
             &format!("git add {}", args.join(" ")),
-            &format!("rtk git add {}", args.join(" ")),
+            &format!("otk git add {}", args.join(" ")),
             &raw_output,
             &compact,
         );
@@ -753,13 +753,13 @@ fn run_commit(messages: &[String], verbose: u8, global_args: &[String]) -> Resul
 
         println!("{}", compact);
 
-        timer.track(&original_cmd, "rtk git commit", &raw_output, &compact);
+        timer.track(&original_cmd, "otk git commit", &raw_output, &compact);
     } else {
         if stderr.contains("nothing to commit") || stdout.contains("nothing to commit") {
             println!("ok (nothing to commit)");
             timer.track(
                 &original_cmd,
-                "rtk git commit",
+                "otk git commit",
                 &raw_output,
                 "ok (nothing to commit)",
             );
@@ -821,7 +821,7 @@ fn run_push(args: &[String], verbose: u8, global_args: &[String]) -> Result<()> 
 
         timer.track(
             &format!("git push {}", args.join(" ")),
-            &format!("rtk git push {}", args.join(" ")),
+            &format!("otk git push {}", args.join(" ")),
             &raw,
             &compact,
         );
@@ -907,7 +907,7 @@ fn run_pull(args: &[String], verbose: u8, global_args: &[String]) -> Result<()> 
 
         timer.track(
             &format!("git pull {}", args.join(" ")),
-            &format!("rtk git pull {}", args.join(" ")),
+            &format!("otk git pull {}", args.join(" ")),
             &raw_output,
             &compact,
         );
@@ -973,7 +973,7 @@ fn run_branch(args: &[String], verbose: u8, global_args: &[String]) -> Result<()
 
         timer.track(
             &format!("git branch {}", args.join(" ")),
-            &format!("rtk git branch {}", args.join(" ")),
+            &format!("otk git branch {}", args.join(" ")),
             &combined,
             msg,
         );
@@ -1013,7 +1013,7 @@ fn run_branch(args: &[String], verbose: u8, global_args: &[String]) -> Result<()
 
     timer.track(
         &format!("git branch {}", args.join(" ")),
-        &format!("rtk git branch {}", args.join(" ")),
+        &format!("otk git branch {}", args.join(" ")),
         &raw,
         &filtered,
     );
@@ -1114,7 +1114,7 @@ fn run_fetch(args: &[String], verbose: u8, global_args: &[String]) -> Result<()>
     };
 
     println!("{}", msg);
-    timer.track("git fetch", "rtk git fetch", &raw, &msg);
+    timer.track("git fetch", "otk git fetch", &raw, &msg);
 
     Ok(())
 }
@@ -1143,13 +1143,13 @@ fn run_stash(
             if stdout.trim().is_empty() {
                 let msg = "No stashes";
                 println!("{}", msg);
-                timer.track("git stash list", "rtk git stash list", &raw, msg);
+                timer.track("git stash list", "otk git stash list", &raw, msg);
                 return Ok(());
             }
 
             let filtered = filter_stash_list(&stdout);
             println!("{}", filtered);
-            timer.track("git stash list", "rtk git stash list", &raw, &filtered);
+            timer.track("git stash list", "otk git stash list", &raw, &filtered);
         }
         Some("show") => {
             let mut cmd = git_cmd(global_args);
@@ -1171,7 +1171,7 @@ fn run_stash(
                 compacted
             };
 
-            timer.track("git stash show", "rtk git stash show", &raw, &filtered);
+            timer.track("git stash show", "otk git stash show", &raw, &filtered);
         }
         Some("pop") | Some("apply") | Some("drop") | Some("push") => {
             let sub = subcommand.unwrap();
@@ -1199,7 +1199,7 @@ fn run_stash(
 
             timer.track(
                 &format!("git stash {}", sub),
-                &format!("rtk git stash {}", sub),
+                &format!("otk git stash {}", sub),
                 &combined,
                 &msg,
             );
@@ -1238,7 +1238,7 @@ fn run_stash(
                 combined.clone()
             };
 
-            timer.track("git stash", "rtk git stash", &combined, &msg);
+            timer.track("git stash", "otk git stash", &combined, &msg);
 
             if !output.status.success() {
                 std::process::exit(output.status.code().unwrap_or(1));
@@ -1301,7 +1301,7 @@ fn run_worktree(args: &[String], verbose: u8, global_args: &[String]) -> Result<
 
         timer.track(
             &format!("git worktree {}", args.join(" ")),
-            &format!("rtk git worktree {}", args.join(" ")),
+            &format!("otk git worktree {}", args.join(" ")),
             &combined,
             msg,
         );
@@ -1329,7 +1329,7 @@ fn run_worktree(args: &[String], verbose: u8, global_args: &[String]) -> Result<
 
     let filtered = filter_worktree_list(&stdout);
     println!("{}", filtered);
-    timer.track("git worktree list", "rtk git worktree", &raw, &filtered);
+    timer.track("git worktree list", "otk git worktree", &raw, &filtered);
 
     Ok(())
 }
@@ -1376,7 +1376,7 @@ pub fn run_passthrough(args: &[OsString], global_args: &[String], verbose: u8) -
     let args_str = tracking::args_display(args);
     timer.track_passthrough(
         &format!("git {}", args_str),
-        &format!("rtk git {} (passthrough)", args_str),
+        &format!("otk git {} (passthrough)", args_str),
     );
 
     if !status.success() {
@@ -1681,7 +1681,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
     #[test]
     #[ignore] // Integration test: requires git repo
     fn test_branch_creation_not_swallowed() {
-        let branch = "test-rtk-create-branch-regression";
+        let branch = "test-otk-create-branch-regression";
         // Create branch via run_branch
         run_branch(&[branch.to_string()], 0, &[]).expect("run_branch should succeed");
         // Verify it exists
@@ -1703,7 +1703,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
     #[test]
     #[ignore] // Integration test: requires git repo
     fn test_branch_creation_from_commit() {
-        let branch = "test-rtk-create-from-commit";
+        let branch = "test-otk-create-from-commit";
         run_branch(&[branch.to_string(), "HEAD".to_string()], 0, &[])
             .expect("run_branch with start-point should succeed");
         let output = Command::new("git")

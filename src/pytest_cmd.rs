@@ -70,7 +70,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("pytest {}", args.join(" ")),
-        &format!("rtk pytest {}", args.join(" ")),
+        &format!("otk pytest {}", args.join(" ")),
         &raw,
         &filtered,
     );

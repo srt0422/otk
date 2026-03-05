@@ -4,7 +4,7 @@ Complete guide to analyzing your rtk token savings with temporal breakdowns and 
 
 ## Overview
 
-The `rtk gain` command provides comprehensive analytics for tracking your token savings across time periods.
+The `otk gain` command provides comprehensive analytics for tracking your token savings across time periods.
 
 **Database Location**: `~/.local/share/rtk/history.db`
 **Retention Policy**: 90 days
@@ -14,21 +14,21 @@ The `rtk gain` command provides comprehensive analytics for tracking your token 
 
 ```bash
 # Default summary view
-rtk gain
+otk gain
 
 # Temporal breakdowns
-rtk gain --daily          # All days since tracking started
-rtk gain --weekly         # Aggregated by week
-rtk gain --monthly        # Aggregated by month
-rtk gain --all            # Show all breakdowns at once
+otk gain --daily          # All days since tracking started
+otk gain --weekly         # Aggregated by week
+otk gain --monthly        # Aggregated by month
+otk gain --all            # Show all breakdowns at once
 
 # Export formats
-rtk gain --all --format json > savings.json
-rtk gain --all --format csv > savings.csv
+otk gain --all --format json > savings.json
+otk gain --all --format csv > savings.csv
 
 # Combined flags
-rtk gain --graph --history --quota    # Classic view with extras
-rtk gain --daily --weekly --monthly   # Multiple breakdowns
+otk gain --graph --history --quota    # Classic view with extras
+otk gain --daily --weekly --monthly   # Multiple breakdowns
 ```
 
 ## Command Options
@@ -171,17 +171,17 @@ month,commands,input_tokens,output_tokens,saved_tokens,savings_pct
 
 ```bash
 # Generate weekly report every Monday
-rtk gain --weekly --format csv > reports/week-$(date +%Y-%W).csv
+otk gain --weekly --format csv > reports/week-$(date +%Y-%W).csv
 
 # Compare this week vs last week
-rtk gain --weekly | tail -3
+otk gain --weekly | tail -3
 ```
 
 ### Monthly Cost Analysis
 
 ```bash
 # Export monthly data for budget review
-rtk gain --monthly --format json | jq '.monthly[] |
+otk gain --monthly --format json | jq '.monthly[] |
   {month, saved_tokens, quota_pct: (.saved_tokens / 6000000 * 100)}'
 ```
 
@@ -208,7 +208,7 @@ daily_df.plot(x='date', y='savings_pct', kind='line')
 
 ### Excel Analysis
 
-1. Export CSV: `rtk gain --all --format csv > rtk-data.csv`
+1. Export CSV: `otk gain --all --format csv > rtk-data.csv`
 2. Open in Excel
 3. Create pivot tables:
    - Daily trends (line chart)
@@ -219,7 +219,7 @@ daily_df.plot(x='date', y='savings_pct', kind='line')
 
 ```bash
 # Generate dashboard data daily via cron
-0 0 * * * rtk gain --all --format json > /var/www/dashboard/rtk-stats.json
+0 0 * * * otk gain --all --format json > /var/www/dashboard/rtk-stats.json
 
 # Serve with static site
 cat > index.html <<'EOF'
@@ -341,7 +341,7 @@ jobs:
         run: cargo install --path .
       - name: Generate report
         run: |
-          rtk gain --weekly --format json > stats/week-$(date +%Y-%W).json
+          otk gain --weekly --format json > stats/week-$(date +%Y-%W).json
       - name: Commit stats
         run: |
           git add stats/
@@ -391,11 +391,11 @@ rtk git status
 
 ```bash
 # Check for pipe errors
-rtk gain --format json 2>&1 | tee /tmp/rtk-debug.log | jq .
+otk gain --format json 2>&1 | tee /tmp/rtk-debug.log | jq .
 
 # Use release build to avoid warnings
 cargo build --release
-./target/release/rtk gain --format json
+./target/release/otk gain --format json
 ```
 
 ### Incorrect statistics
@@ -419,7 +419,7 @@ print(f'rtk estimate: {len(text) // 4}')
 
 ## Best Practices
 
-1. **Regular Exports**: `rtk gain --all --format json > monthly-$(date +%Y%m).json`
+1. **Regular Exports**: `otk gain --all --format json > monthly-$(date +%Y%m).json`
 2. **Trend Analysis**: Compare week-over-week savings to identify optimization opportunities
 3. **Command Profiling**: Use `--history` to see which commands save the most
 4. **Backup Before Cleanup**: Always backup before manual database operations
@@ -428,5 +428,5 @@ print(f'rtk estimate: {len(text) // 4}')
 ## See Also
 
 - [README.md](../README.md) - Full rtk documentation
-- [CLAUDE.md](../CLAUDE.md) - Claude Code integration guide
+- [AGENTS.md](../AGENTS.md) - AI coding integration guide
 - [ARCHITECTURE.md](../ARCHITECTURE.md) - Technical architecture

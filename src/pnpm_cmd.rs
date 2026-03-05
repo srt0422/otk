@@ -339,7 +339,7 @@ fn run_list(depth: usize, args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("pnpm list --depth={}", depth),
-        &format!("rtk pnpm list --depth={}", depth),
+        &format!("otk pnpm list --depth={}", depth),
         &stdout,
         &filtered,
     );
@@ -393,7 +393,7 @@ fn run_outdated(args: &[String], verbose: u8) -> Result<()> {
         println!("{}", filtered);
     }
 
-    timer.track("pnpm outdated", "rtk pnpm outdated", &combined, &filtered);
+    timer.track("pnpm outdated", "otk pnpm outdated", &combined, &filtered);
 
     Ok(())
 }
@@ -441,7 +441,7 @@ fn run_install(packages: &[String], args: &[String], verbose: u8) -> Result<()> 
 
     timer.track(
         &format!("pnpm install {}", packages.join(" ")),
-        &format!("rtk pnpm install {}", packages.join(" ")),
+        &format!("otk pnpm install {}", packages.join(" ")),
         &combined,
         &filtered,
     );
@@ -503,7 +503,7 @@ pub fn run_passthrough(args: &[OsString], verbose: u8) -> Result<()> {
     let args_str = tracking::args_display(args);
     timer.track_passthrough(
         &format!("pnpm {}", args_str),
-        &format!("rtk pnpm {} (passthrough)", args_str),
+        &format!("otk pnpm {} (passthrough)", args_str),
     );
 
     if !status.success() {

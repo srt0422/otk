@@ -136,7 +136,7 @@ pub struct GainSummary {
 
 /// Daily statistics for token savings and execution metrics.
 ///
-/// Serializable to JSON for export via `rtk gain --daily --format json`.
+/// Serializable to JSON for export via `otk gain --daily --format json`.
 ///
 /// # JSON Schema
 ///
@@ -174,7 +174,7 @@ pub struct DayStats {
 
 /// Weekly statistics for token savings and execution metrics.
 ///
-/// Serializable to JSON for export via `rtk gain --weekly --format json`.
+/// Serializable to JSON for export via `otk gain --weekly --format json`.
 /// Weeks start on Sunday (SQLite default).
 #[derive(Debug, Serialize)]
 pub struct WeekStats {
@@ -200,7 +200,7 @@ pub struct WeekStats {
 
 /// Monthly statistics for token savings and execution metrics.
 ///
-/// Serializable to JSON for export via `rtk gain --monthly --format json`.
+/// Serializable to JSON for export via `otk gain --monthly --format json`.
 #[derive(Debug, Serialize)]
 pub struct MonthStats {
     /// Month identifier (YYYY-MM)
@@ -256,7 +256,7 @@ impl Tracker {
                 id INTEGER PRIMARY KEY,
                 timestamp TEXT NOT NULL,
                 original_cmd TEXT NOT NULL,
-                rtk_cmd TEXT NOT NULL,
+                otk_cmd TEXT NOT NULL,
                 input_tokens INTEGER NOT NULL,
                 output_tokens INTEGER NOT NULL,
                 saved_tokens INTEGER NOT NULL,
@@ -343,7 +343,7 @@ impl Tracker {
     pub fn record(
         &self,
         original_cmd: &str,
-        rtk_cmd: &str,
+        otk_cmd: &str,
         input_tokens: usize,
         output_tokens: usize,
         exec_time_ms: u64,
@@ -358,12 +358,12 @@ impl Tracker {
         let project_path = current_project_path_string(); // added: record cwd
 
         self.conn.execute(
-            "INSERT INTO commands (timestamp, original_cmd, rtk_cmd, project_path, input_tokens, output_tokens, saved_tokens, savings_pct, exec_time_ms)
+            "INSERT INTO commands (timestamp, original_cmd, otk_cmd, project_path, input_tokens, output_tokens, saved_tokens, savings_pct, exec_time_ms)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)", // added: project_path
             params![
                 Utc::now().to_rfc3339(),
                 original_cmd,
-                rtk_cmd,
+                otk_cmd,
                 project_path, // added
                 input_tokens as i64,
                 output_tokens as i64,
@@ -411,7 +411,7 @@ impl Tracker {
         Ok(())
     }
 
-    /// Get parse failure summary for `rtk gain --failures`.
+    /// Get parse failure summary for `otk gain --failures`.
     pub fn get_parse_failure_summary(&self) -> Result<ParseFailureSummary> {
         let total: i64 = self
             .conn
@@ -563,10 +563,10 @@ impl Tracker {
     ) -> Result<Vec<(String, usize, usize, f64, u64)>> {
         let (project_exact, project_glob) = project_filter_params(project_path); // added
         let mut stmt = self.conn.prepare(
-            "SELECT rtk_cmd, COUNT(*), SUM(saved_tokens), AVG(savings_pct), AVG(exec_time_ms)
+            "SELECT otk_cmd, COUNT(*), SUM(saved_tokens), AVG(savings_pct), AVG(exec_time_ms)
              FROM commands
              WHERE (?1 IS NULL OR project_path = ?1 OR project_path GLOB ?2)
-             GROUP BY rtk_cmd
+             GROUP BY otk_cmd
              ORDER BY SUM(saved_tokens) DESC
              LIMIT 10", // added: project filter in WHERE
         )?;
@@ -863,7 +863,7 @@ impl Tracker {
     ) -> Result<Vec<CommandRecord>> {
         let (project_exact, project_glob) = project_filter_params(project_path); // added
         let mut stmt = self.conn.prepare(
-            "SELECT timestamp, rtk_cmd, saved_tokens, savings_pct
+            "SELECT timestamp, otk_cmd, saved_tokens, savings_pct
              FROM commands
              WHERE (?1 IS NULL OR project_path = ?1 OR project_path GLOB ?2)
              ORDER BY timestamp DESC
@@ -901,12 +901,12 @@ impl Tracker {
     /// Get top N commands by frequency (for telemetry).
     pub fn top_commands(&self, limit: usize) -> Result<Vec<String>> {
         let mut stmt = self.conn.prepare(
-            "SELECT rtk_cmd, COUNT(*) as cnt FROM commands
-             GROUP BY rtk_cmd ORDER BY cnt DESC LIMIT ?1",
+            "SELECT otk_cmd, COUNT(*) as cnt FROM commands
+             GROUP BY otk_cmd ORDER BY cnt DESC LIMIT ?1",
         )?;
         let rows = stmt.query_map(params![limit as i64], |row| {
             let cmd: String = row.get(0)?;
-            // Extract just the command name (e.g. "rtk git status" → "git")
+            // Extract just the command name (e.g. "otk git status" → "git")
             Ok(cmd.split_whitespace().nth(1).unwrap_or(&cmd).to_string())
         })?;
         Ok(rows.filter_map(|r| r.ok()).collect())

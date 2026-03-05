@@ -83,7 +83,7 @@ pub fn run_test(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("go test {}", args.join(" ")),
-        &format!("rtk go test {}", args.join(" ")),
+        &format!("otk go test {}", args.join(" ")),
         &raw,
         &filtered,
     );
@@ -136,7 +136,7 @@ pub fn run_build(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("go build {}", args.join(" ")),
-        &format!("rtk go build {}", args.join(" ")),
+        &format!("otk go build {}", args.join(" ")),
         &raw,
         &filtered,
     );
@@ -189,7 +189,7 @@ pub fn run_vet(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("go vet {}", args.join(" ")),
-        &format!("rtk go vet {}", args.join(" ")),
+        &format!("otk go vet {}", args.join(" ")),
         &raw,
         &filtered,
     );
@@ -234,7 +234,7 @@ pub fn run_other(args: &[OsString], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("go {}", subcommand),
-        &format!("rtk go {}", subcommand),
+        &format!("otk go {}", subcommand),
         &raw,
         &raw, // No filtering for unsupported commands
     );

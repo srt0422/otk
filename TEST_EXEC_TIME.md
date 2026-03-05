@@ -7,12 +7,12 @@
 cargo install --path .
 
 # 2. Run a few commands to populate data
-rtk git status
-rtk ls .
-rtk grep "tracking" src/
+otk git status
+otk ls .
+otk grep "tracking" src/
 
 # 3. Check gain stats (should show execution times)
-rtk gain
+otk gain
 
 # Expected output:
 # Total exec time:   XX.Xs (avg XXms)
@@ -24,18 +24,18 @@ rtk gain
 ### 1. Basic Time Tracking
 ```bash
 # Run commands with different execution times
-rtk git log -10          # Fast (~10ms)
-rtk cargo test           # Slow (~300ms)
-rtk vitest run           # Very slow (seconds)
+otk git log -10          # Fast (~10ms)
+otk cargo test           # Slow (~300ms)
+otk vitest run           # Very slow (seconds)
 
 # Verify times are recorded
-rtk gain
+otk gain
 # Should show different avg times per command
 ```
 
 ### 2. Daily Breakdown
 ```bash
-rtk gain --daily
+otk gain --daily
 
 # Expected:
 # Date column + Time column showing avg time per day
@@ -47,7 +47,7 @@ rtk gain --daily
 
 **JSON Export:**
 ```bash
-rtk gain --daily --format json | jq '.summary'
+otk gain --daily --format json | jq '.summary'
 
 # Should include:
 # "total_time_ms": 12345,
@@ -56,7 +56,7 @@ rtk gain --daily --format json | jq '.summary'
 
 **CSV Export:**
 ```bash
-rtk gain --daily --format csv
+otk gain --daily --format csv
 
 # Headers should include:
 # date,commands,input_tokens,...,total_time_ms,avg_time_ms
@@ -65,17 +65,17 @@ rtk gain --daily --format csv
 ### 4. Multiple Commands
 ```bash
 # Run 10 commands and measure total time
-for i in {1..10}; do rtk git status; done
+for i in {1..10}; do otk git status; done
 
-rtk gain
+otk gain
 # Total exec time should be ~10-50ms (10 × 1-5ms)
 ```
 
 ## Verification Checklist
 
-- [ ] `rtk gain` shows "Total exec time: X (avg Yms)"
+- [ ] `otk gain` shows "Total exec time: X (avg Yms)"
 - [ ] By Command table has "Time" column
-- [ ] `rtk gain --daily` shows time per day
+- [ ] `otk gain --daily` shows time per day
 - [ ] JSON export includes `total_time_ms` and `avg_time_ms`
 - [ ] CSV export has time columns
 - [ ] New commands show realistic times (not 0ms)
@@ -85,7 +85,7 @@ rtk gain
 
 ```bash
 # Check SQLite schema includes exec_time_ms
-sqlite3 ~/.local/share/rtk/history.db "PRAGMA table_info(commands);"
+sqlite3 ~/.local/share/otk/history.db "PRAGMA table_info(commands);"
 
 # Should show:
 # ...

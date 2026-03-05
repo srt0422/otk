@@ -55,17 +55,17 @@ pub fn run(
         filtered = filter::smart_truncate(&filtered, max, &lang);
     }
 
-    let rtk_output = if line_numbers {
+    let otk_output = if line_numbers {
         format_with_line_numbers(&filtered)
     } else {
         filtered.clone()
     };
-    println!("{}", rtk_output);
+    println!("{}", otk_output);
     timer.track(
         &format!("cat {}", file.display()),
-        "rtk read",
+        "otk read",
         &content,
-        &rtk_output,
+        &otk_output,
     );
     Ok(())
 }
@@ -121,14 +121,14 @@ pub fn run_stdin(
         filtered = filter::smart_truncate(&filtered, max, &lang);
     }
 
-    let rtk_output = if line_numbers {
+    let otk_output = if line_numbers {
         format_with_line_numbers(&filtered)
     } else {
         filtered.clone()
     };
-    println!("{}", rtk_output);
+    println!("{}", otk_output);
 
-    timer.track("cat - (stdin)", "rtk read -", &content, &rtk_output);
+    timer.track("cat - (stdin)", "otk read -", &content, &otk_output);
     Ok(())
 }
 

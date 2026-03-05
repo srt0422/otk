@@ -40,7 +40,7 @@ SQLite database (~/.local/share/rtk/tracking.db)
   ↓
 Aggregation APIs (get_summary, get_all_days, etc.)
   ↓
-CLI output (rtk gain) or JSON/CSV export
+CLI output (otk gain) or JSON/CSV export
 ```
 
 ### Storage Location
@@ -369,11 +369,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install RTK
-        run: cargo install --git https://github.com/rtk-ai/rtk
+        run: cargo install --git https://github.com/openclaw/otk
 
       - name: Export weekly stats
         run: |
-          rtk gain --weekly --format json > rtk-weekly.json
+          otk gain --weekly --format json > rtk-weekly.json
           cat rtk-weekly.json
 
       - name: Upload artifact
@@ -444,7 +444,7 @@ if __name__ == "__main__":
 ```rust
 // In your Cargo.toml
 // [dependencies]
-// rtk = { git = "https://github.com/rtk-ai/rtk" }
+// rtk = { git = "https://github.com/openclaw/otk" }
 
 use rtk::tracking::{Tracker, TimedExecution};
 use anyhow::Result;
@@ -550,7 +550,7 @@ let _ = conn.execute(
 If you see "database is locked" errors:
 - Ensure only one RTK process writes at a time
 - Check file permissions on `~/.local/share/rtk/tracking.db`
-- Delete and recreate: `rm ~/.local/share/rtk/tracking.db && rtk gain`
+- Delete and recreate: `rm ~/.local/share/rtk/tracking.db && otk gain`
 
 ### Missing exec_time_ms column
 

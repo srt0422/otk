@@ -19,31 +19,31 @@ pub fn run(file1: &Path, file2: &Path, verbose: u8) -> Result<()> {
     let lines1: Vec<&str> = content1.lines().collect();
     let lines2: Vec<&str> = content2.lines().collect();
     let diff = compute_diff(&lines1, &lines2);
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     if diff.added == 0 && diff.removed == 0 {
-        rtk.push_str("✅ Files are identical");
-        println!("{}", rtk);
+        otk.push_str("✅ Files are identical");
+        println!("{}", otk);
         timer.track(
             &format!("diff {} {}", file1.display(), file2.display()),
-            "rtk diff",
+            "otk diff",
             &raw,
-            &rtk,
+            &otk,
         );
         return Ok(());
     }
 
-    rtk.push_str(&format!("📊 {} → {}\n", file1.display(), file2.display()));
-    rtk.push_str(&format!(
+    otk.push_str(&format!("📊 {} → {}\n", file1.display(), file2.display()));
+    otk.push_str(&format!(
         "   +{} added, -{} removed, ~{} modified\n\n",
         diff.added, diff.removed, diff.modified
     ));
 
     for change in diff.changes.iter().take(50) {
         match change {
-            DiffChange::Added(ln, c) => rtk.push_str(&format!("+{:4} {}\n", ln, truncate(c, 80))),
-            DiffChange::Removed(ln, c) => rtk.push_str(&format!("-{:4} {}\n", ln, truncate(c, 80))),
-            DiffChange::Modified(ln, old, new) => rtk.push_str(&format!(
+            DiffChange::Added(ln, c) => otk.push_str(&format!("+{:4} {}\n", ln, truncate(c, 80))),
+            DiffChange::Removed(ln, c) => otk.push_str(&format!("-{:4} {}\n", ln, truncate(c, 80))),
+            DiffChange::Modified(ln, old, new) => otk.push_str(&format!(
                 "~{:4} {} → {}\n",
                 ln,
                 truncate(old, 70),
@@ -52,15 +52,15 @@ pub fn run(file1: &Path, file2: &Path, verbose: u8) -> Result<()> {
         }
     }
     if diff.changes.len() > 50 {
-        rtk.push_str(&format!("... +{} more changes", diff.changes.len() - 50));
+        otk.push_str(&format!("... +{} more changes", diff.changes.len() - 50));
     }
 
-    print!("{}", rtk);
+    print!("{}", otk);
     timer.track(
         &format!("diff {} {}", file1.display(), file2.display()),
-        "rtk diff",
+        "otk diff",
         &raw,
-        &rtk,
+        &otk,
     );
     Ok(())
 }
@@ -77,7 +77,7 @@ pub fn run_stdin(_verbose: u8) -> Result<()> {
     let condensed = condense_unified_diff(&input);
     println!("{}", condensed);
 
-    timer.track("diff (stdin)", "rtk diff (stdin)", &input, &condensed);
+    timer.track("diff (stdin)", "otk diff (stdin)", &input, &condensed);
 
     Ok(())
 }

@@ -30,23 +30,23 @@ pub fn run_err(command: &str, verbose: u8) -> Result<()> {
     let stderr = String::from_utf8_lossy(&output.stderr);
     let raw = format!("{}\n{}", stdout, stderr);
     let filtered = filter_errors(&raw);
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     if filtered.is_empty() {
         if output.status.success() {
-            rtk.push_str("✅ Command completed successfully (no errors)");
+            otk.push_str("✅ Command completed successfully (no errors)");
         } else {
-            rtk.push_str(&format!(
+            otk.push_str(&format!(
                 "❌ Command failed (exit code: {:?})\n",
                 output.status.code()
             ));
             let lines: Vec<&str> = raw.lines().collect();
             for line in lines.iter().rev().take(10).rev() {
-                rtk.push_str(&format!("  {}\n", line));
+                otk.push_str(&format!("  {}\n", line));
             }
         }
     } else {
-        rtk.push_str(&filtered);
+        otk.push_str(&filtered);
     }
 
     let exit_code = output
@@ -54,11 +54,11 @@ pub fn run_err(command: &str, verbose: u8) -> Result<()> {
         .code()
         .unwrap_or(if output.status.success() { 0 } else { 1 });
     if let Some(hint) = crate::tee::tee_and_hint(&raw, "err", exit_code) {
-        println!("{}\n{}", rtk, hint);
+        println!("{}\n{}", otk, hint);
     } else {
-        println!("{}", rtk);
+        println!("{}", otk);
     }
-    timer.track(command, "rtk run-err", &raw, &rtk);
+    timer.track(command, "otk run-err", &raw, &otk);
     Ok(())
 }
 
@@ -99,7 +99,7 @@ pub fn run_test(command: &str, verbose: u8) -> Result<()> {
     } else {
         println!("{}", summary);
     }
-    timer.track(command, "rtk run-test", &raw, &summary);
+    timer.track(command, "otk run-test", &raw, &summary);
     Ok(())
 }
 

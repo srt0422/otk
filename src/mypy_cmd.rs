@@ -39,7 +39,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("mypy {}", args.join(" ")),
-        &format!("rtk mypy {}", args.join(" ")),
+        &format!("otk mypy {}", args.join(" ")),
         &raw,
         &filtered,
     );

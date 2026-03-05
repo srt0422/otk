@@ -131,7 +131,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
 
     timer.track(
         &format!("{} {}", formatter, user_args.join(" ")),
-        &format!("rtk format {} {}", formatter, user_args.join(" ")),
+        &format!("otk format {} {}", formatter, user_args.join(" ")),
         &raw,
         &filtered,
     );

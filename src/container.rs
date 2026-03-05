@@ -43,17 +43,17 @@ fn docker_ps(_verbose: u8) -> Result<()> {
         .context("Failed to run docker ps")?;
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     if stdout.trim().is_empty() {
-        rtk.push_str("🐳 0 containers");
-        println!("{}", rtk);
-        timer.track("docker ps", "rtk docker ps", &raw, &rtk);
+        otk.push_str("🐳 0 containers");
+        println!("{}", otk);
+        timer.track("docker ps", "otk docker ps", &raw, &otk);
         return Ok(());
     }
 
     let count = stdout.lines().count();
-    rtk.push_str(&format!("🐳 {} containers:\n", count));
+    otk.push_str(&format!("🐳 {} containers:\n", count));
 
     for line in stdout.lines().take(15) {
         let parts: Vec<&str> = line.split('\t').collect();
@@ -63,9 +63,9 @@ fn docker_ps(_verbose: u8) -> Result<()> {
             let short_image = parts.get(3).unwrap_or(&"").split('/').last().unwrap_or("");
             let ports = compact_ports(parts.get(4).unwrap_or(&""));
             if ports == "-" {
-                rtk.push_str(&format!("  {} {} ({})\n", id, name, short_image));
+                otk.push_str(&format!("  {} {} ({})\n", id, name, short_image));
             } else {
-                rtk.push_str(&format!(
+                otk.push_str(&format!(
                     "  {} {} ({}) [{}]\n",
                     id, name, short_image, ports
                 ));
@@ -73,11 +73,11 @@ fn docker_ps(_verbose: u8) -> Result<()> {
         }
     }
     if count > 15 {
-        rtk.push_str(&format!("  ... +{} more", count - 15));
+        otk.push_str(&format!("  ... +{} more", count - 15));
     }
 
-    print!("{}", rtk);
-    timer.track("docker ps", "rtk docker ps", &raw, &rtk);
+    print!("{}", otk);
+    timer.track("docker ps", "otk docker ps", &raw, &otk);
     Ok(())
 }
 
@@ -97,12 +97,12 @@ fn docker_images(_verbose: u8) -> Result<()> {
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let lines: Vec<&str> = stdout.lines().collect();
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     if lines.is_empty() {
-        rtk.push_str("🐳 0 images");
-        println!("{}", rtk);
-        timer.track("docker images", "rtk docker images", &raw, &rtk);
+        otk.push_str("🐳 0 images");
+        println!("{}", otk);
+        timer.track("docker images", "otk docker images", &raw, &otk);
         return Ok(());
     }
 
@@ -127,7 +127,7 @@ fn docker_images(_verbose: u8) -> Result<()> {
     } else {
         format!("{:.0}MB", total_size_mb)
     };
-    rtk.push_str(&format!("🐳 {} images ({})\n", lines.len(), total_display));
+    otk.push_str(&format!("🐳 {} images ({})\n", lines.len(), total_display));
 
     for line in lines.iter().take(15) {
         let parts: Vec<&str> = line.split('\t').collect();
@@ -139,15 +139,15 @@ fn docker_images(_verbose: u8) -> Result<()> {
             } else {
                 image.to_string()
             };
-            rtk.push_str(&format!("  {} [{}]\n", short, size));
+            otk.push_str(&format!("  {} [{}]\n", short, size));
         }
     }
     if lines.len() > 15 {
-        rtk.push_str(&format!("  ... +{} more", lines.len() - 15));
+        otk.push_str(&format!("  ... +{} more", lines.len() - 15));
     }
 
-    print!("{}", rtk);
-    timer.track("docker images", "rtk docker images", &raw, &rtk);
+    print!("{}", otk);
+    timer.track("docker images", "otk docker images", &raw, &otk);
     Ok(())
 }
 
@@ -156,7 +156,7 @@ fn docker_logs(args: &[String], _verbose: u8) -> Result<()> {
 
     let container = args.first().map(|s| s.as_str()).unwrap_or("");
     if container.is_empty() {
-        println!("Usage: rtk docker logs <container>");
+        println!("Usage: otk docker logs <container>");
         return Ok(());
     }
 
@@ -170,13 +170,13 @@ fn docker_logs(args: &[String], _verbose: u8) -> Result<()> {
     let raw = format!("{}\n{}", stdout, stderr);
 
     let analyzed = crate::log_cmd::run_stdin_str(&raw);
-    let rtk = format!("🐳 Logs for {}:\n{}", container, analyzed);
-    println!("{}", rtk);
+    let otk = format!("🐳 Logs for {}:\n{}", container, analyzed);
+    println!("{}", otk);
     timer.track(
         &format!("docker logs {}", container),
-        "rtk docker logs",
+        "otk docker logs",
         &raw,
-        &rtk,
+        &otk,
     );
     Ok(())
 }
@@ -192,23 +192,23 @@ fn kubectl_pods(args: &[String], _verbose: u8) -> Result<()> {
 
     let output = cmd.output().context("Failed to run kubectl get pods")?;
     let raw = String::from_utf8_lossy(&output.stdout).to_string();
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     let json: serde_json::Value = match serde_json::from_str(&raw) {
         Ok(v) => v,
         Err(_) => {
-            rtk.push_str("☸️  No pods found");
-            println!("{}", rtk);
-            timer.track("kubectl get pods", "rtk kubectl pods", &raw, &rtk);
+            otk.push_str("☸️  No pods found");
+            println!("{}", otk);
+            timer.track("kubectl get pods", "otk kubectl pods", &raw, &otk);
             return Ok(());
         }
     };
 
     let items = json["items"].as_array();
     if items.is_none() || items.unwrap().is_empty() {
-        rtk.push_str("☸️  No pods found");
-        println!("{}", rtk);
-        timer.track("kubectl get pods", "rtk kubectl pods", &raw, &rtk);
+        otk.push_str("☸️  No pods found");
+        println!("{}", otk);
+        timer.track("kubectl get pods", "otk kubectl pods", &raw, &otk);
         return Ok(());
     }
 
@@ -266,19 +266,19 @@ fn kubectl_pods(args: &[String], _verbose: u8) -> Result<()> {
         parts.push(format!("{} restarts", restarts_total));
     }
 
-    rtk.push_str(&format!("☸️  {} pods: {}\n", pods.len(), parts.join(", ")));
+    otk.push_str(&format!("☸️  {} pods: {}\n", pods.len(), parts.join(", ")));
     if !issues.is_empty() {
-        rtk.push_str("⚠️  Issues:\n");
+        otk.push_str("⚠️  Issues:\n");
         for issue in issues.iter().take(10) {
-            rtk.push_str(&format!("  {}\n", issue));
+            otk.push_str(&format!("  {}\n", issue));
         }
         if issues.len() > 10 {
-            rtk.push_str(&format!("  ... +{} more", issues.len() - 10));
+            otk.push_str(&format!("  ... +{} more", issues.len() - 10));
         }
     }
 
-    print!("{}", rtk);
-    timer.track("kubectl get pods", "rtk kubectl pods", &raw, &rtk);
+    print!("{}", otk);
+    timer.track("kubectl get pods", "otk kubectl pods", &raw, &otk);
     Ok(())
 }
 
@@ -293,28 +293,28 @@ fn kubectl_services(args: &[String], _verbose: u8) -> Result<()> {
 
     let output = cmd.output().context("Failed to run kubectl get services")?;
     let raw = String::from_utf8_lossy(&output.stdout).to_string();
-    let mut rtk = String::new();
+    let mut otk = String::new();
 
     let json: serde_json::Value = match serde_json::from_str(&raw) {
         Ok(v) => v,
         Err(_) => {
-            rtk.push_str("☸️  No services found");
-            println!("{}", rtk);
-            timer.track("kubectl get svc", "rtk kubectl svc", &raw, &rtk);
+            otk.push_str("☸️  No services found");
+            println!("{}", otk);
+            timer.track("kubectl get svc", "otk kubectl svc", &raw, &otk);
             return Ok(());
         }
     };
 
     let items = json["items"].as_array();
     if items.is_none() || items.unwrap().is_empty() {
-        rtk.push_str("☸️  No services found");
-        println!("{}", rtk);
-        timer.track("kubectl get svc", "rtk kubectl svc", &raw, &rtk);
+        otk.push_str("☸️  No services found");
+        println!("{}", otk);
+        timer.track("kubectl get svc", "otk kubectl svc", &raw, &otk);
         return Ok(());
     }
 
     let services = items.unwrap();
-    rtk.push_str(&format!("☸️  {} services:\n", services.len()));
+    otk.push_str(&format!("☸️  {} services:\n", services.len()));
 
     for svc in services.iter().take(15) {
         let ns = svc["metadata"]["namespace"].as_str().unwrap_or("-");
@@ -339,7 +339,7 @@ fn kubectl_services(args: &[String], _verbose: u8) -> Result<()> {
                     .collect()
             })
             .unwrap_or_default();
-        rtk.push_str(&format!(
+        otk.push_str(&format!(
             "  {}/{} {} [{}]\n",
             ns,
             name,
@@ -348,11 +348,11 @@ fn kubectl_services(args: &[String], _verbose: u8) -> Result<()> {
         ));
     }
     if services.len() > 15 {
-        rtk.push_str(&format!("  ... +{} more", services.len() - 15));
+        otk.push_str(&format!("  ... +{} more", services.len() - 15));
     }
 
-    print!("{}", rtk);
-    timer.track("kubectl get svc", "rtk kubectl svc", &raw, &rtk);
+    print!("{}", otk);
+    timer.track("kubectl get svc", "otk kubectl svc", &raw, &otk);
     Ok(())
 }
 
@@ -361,7 +361,7 @@ fn kubectl_logs(args: &[String], _verbose: u8) -> Result<()> {
 
     let pod = args.first().map(|s| s.as_str()).unwrap_or("");
     if pod.is_empty() {
-        println!("Usage: rtk kubectl logs <pod>");
+        println!("Usage: otk kubectl logs <pod>");
         return Ok(());
     }
 
@@ -374,13 +374,13 @@ fn kubectl_logs(args: &[String], _verbose: u8) -> Result<()> {
     let output = cmd.output().context("Failed to run kubectl logs")?;
     let raw = String::from_utf8_lossy(&output.stdout).to_string();
     let analyzed = crate::log_cmd::run_stdin_str(&raw);
-    let rtk = format!("☸️  Logs for {}:\n{}", pod, analyzed);
-    println!("{}", rtk);
+    let otk = format!("☸️  Logs for {}:\n{}", pod, analyzed);
+    println!("{}", otk);
     timer.track(
         &format!("kubectl logs {}", pod),
-        "rtk kubectl logs",
+        "otk kubectl logs",
         &raw,
-        &rtk,
+        &otk,
     );
     Ok(())
 }
@@ -537,7 +537,7 @@ pub fn run_docker_passthrough(args: &[OsString], verbose: u8) -> Result<()> {
     let args_str = tracking::args_display(args);
     timer.track_passthrough(
         &format!("docker {}", args_str),
-        &format!("rtk docker {} (passthrough)", args_str),
+        &format!("otk docker {} (passthrough)", args_str),
     );
 
     if !status.success() {
@@ -585,9 +585,9 @@ pub fn run_compose_ps(verbose: u8) -> Result<()> {
         eprintln!("raw docker compose ps:\n{}", raw);
     }
 
-    let rtk = format_compose_ps(&structured);
-    println!("{}", rtk);
-    timer.track("docker compose ps", "rtk docker compose ps", &raw, &rtk);
+    let otk = format_compose_ps(&structured);
+    println!("{}", otk);
+    timer.track("docker compose ps", "otk docker compose ps", &raw, &otk);
     Ok(())
 }
 
@@ -617,14 +617,14 @@ pub fn run_compose_logs(service: Option<&str>, verbose: u8) -> Result<()> {
         eprintln!("raw docker compose logs:\n{}", raw);
     }
 
-    let rtk = format_compose_logs(&raw);
-    println!("{}", rtk);
+    let otk = format_compose_logs(&raw);
+    println!("{}", otk);
     let svc_label = service.unwrap_or("all");
     timer.track(
         &format!("docker compose logs {}", svc_label),
-        "rtk docker compose logs",
+        "otk docker compose logs",
         &raw,
-        &rtk,
+        &otk,
     );
     Ok(())
 }
@@ -655,14 +655,14 @@ pub fn run_compose_build(service: Option<&str>, verbose: u8) -> Result<()> {
         eprintln!("raw docker compose build:\n{}", raw);
     }
 
-    let rtk = format_compose_build(&raw);
-    println!("{}", rtk);
+    let otk = format_compose_build(&raw);
+    println!("{}", otk);
     let svc_label = service.unwrap_or("all");
     timer.track(
         &format!("docker compose build {}", svc_label),
-        "rtk docker compose build",
+        "otk docker compose build",
         &raw,
-        &rtk,
+        &otk,
     );
     Ok(())
 }
@@ -683,7 +683,7 @@ pub fn run_compose_passthrough(args: &[OsString], verbose: u8) -> Result<()> {
     let args_str = tracking::args_display(args);
     timer.track_passthrough(
         &format!("docker compose {}", args_str),
-        &format!("rtk docker compose {} (passthrough)", args_str),
+        &format!("otk docker compose {} (passthrough)", args_str),
     );
 
     if !status.success() {
@@ -707,7 +707,7 @@ pub fn run_kubectl_passthrough(args: &[OsString], verbose: u8) -> Result<()> {
     let args_str = tracking::args_display(args);
     timer.track_passthrough(
         &format!("kubectl {}", args_str),
-        &format!("rtk kubectl {} (passthrough)", args_str),
+        &format!("otk kubectl {} (passthrough)", args_str),
     );
 
     if !status.success() {

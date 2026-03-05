@@ -1,8 +1,8 @@
-# rtk Architecture Documentation
+# otk Architecture Documentation
 
-> **rtk (Rust Token Killer)** - A high-performance CLI proxy that minimizes LLM token consumption through intelligent output filtering and compression.
+> **otk (OpenClaw Token Killer)** - A high-performance CLI proxy that minimizes LLM token consumption through intelligent output filtering and compression.
 
-This document provides a comprehensive architectural overview of rtk, including system design, data flows, module organization, and implementation patterns.
+This document provides a comprehensive architectural overview of otk, including system design, data flows, module organization, and implementation patterns.
 
 ---
 
@@ -29,13 +29,13 @@ This document provides a comprehensive architectural overview of rtk, including 
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                      rtk - Token Optimization Proxy                    │
+│                      otk - Token Optimization Proxy                    │
 └────────────────────────────────────────────────────────────────────────┘
 
 User Input          CLI Layer           Router            Module Layer
 ──────────          ─────────           ──────            ────────────
 
-$ rtk git log    ─→  Clap Parser   ─→   Commands    ─→   git::run()
+$ otk git log    ─→  Clap Parser   ─→   Commands    ─→   git::run()
   -v --oneline       (main.rs)          enum match
                      • Parse args                         Execute: git log
                      • Extract flags                      Capture output
@@ -48,7 +48,7 @@ $ 3 commits      ←─  Terminal      ←─   Format      ←─   Compact Sta
                                                           tracking::track()
                                                                  ↓
                                                           SQLite INSERT
-                                                          (~/.local/share/rtk/)
+                                                          (~/.local/share/otk/)
 ```
 
 ### Key Components
@@ -73,14 +73,14 @@ $ 3 commits      ←─  Terminal      ←─   Format      ←─   Compact Sta
 
 ### Hook Architecture (v0.9.5+)
 
-The recommended deployment mode uses a Claude Code PreToolUse hook for 100% transparent command rewriting.
+The recommended deployment mode uses a AI coding PreToolUse hook for 100% transparent command rewriting.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                    Hook-Based Command Rewriting                        │
 └────────────────────────────────────────────────────────────────────────┘
 
-Claude Code             settings.json        rtk-rewrite.sh        RTK binary
+AI coding             settings.json        otk-rewrite.sh        OTK binary
      │                       │                     │                    │
      │  Bash: "git status"   │                     │                    │
      │ ─────────────────────►│                     │                    │
@@ -88,23 +88,23 @@ Claude Code             settings.json        rtk-rewrite.sh        RTK binary
      │                       │ ───────────────────►│                    │
      │                       │                     │  detect: git       │
      │                       │                     │  rewrite:          │
-     │                       │                     │  rtk git status    │
+     │                       │                     │  otk git status    │
      │                       │◄────────────────────│                    │
      │                       │  updatedInput        │                    │
      │                       │                                          │
-     │  execute: rtk git status ────────────────────────────────────────►
+     │  execute: otk git status ────────────────────────────────────────►
      │                                                                  │  run git
      │                                                                  │  filter
      │                                                                  │  track
      │◄──────────────────────────────────────────────────────────────────
      │  "3 modified, 1 untracked ✓"    (~10 tokens vs ~200 raw)
      │
-     │  Claude never sees the rewrite — it only sees optimized output.
+     │  AI assistant never sees the rewrite — it only sees optimized output.
 
 Files:
-  ~/.claude/hooks/rtk-rewrite.sh  ← thin delegator (calls `rtk rewrite`, ~50 lines)
-  ~/.claude/settings.json         ← hook registry (PreToolUse registration)
-  ~/.claude/RTK.md                ← minimal context hint (10 lines)
+  ~/.ai-assistant/hooks/otk-rewrite.sh  ← thin delegator (calls `otk rewrite`, ~50 lines)
+  ~/.ai-assistant/settings.json         ← hook registry (PreToolUse registration)
+  ~/.ai-assistant/OTK.md                ← minimal context hint (10 lines)
 ```
 
 Two hook strategies:
@@ -113,7 +113,7 @@ Two hook strategies:
 Auto-Rewrite (default)              Suggest (non-intrusive)
 ─────────────────────               ────────────────────────
 Hook intercepts command             Hook emits systemMessage hint
-Rewrites before execution           Claude decides autonomously
+Rewrites before execution           AI assistant decides autonomously
 100% adoption                       ~70-85% adoption
 Zero context overhead               Minimal context overhead
 Best for: production                Best for: learning / auditing
@@ -132,7 +132,7 @@ Best for: production                Best for: learning / auditing
 
 Phase 1: PARSE
 ──────────────
-$ rtk git log --oneline -5 -v
+$ otk git log --oneline -5 -v
 
 Clap Parser extracts:
   • Command: Commands::Git
@@ -191,7 +191,7 @@ Phase 6: TRACK
 ──────────────
 tracking::track(
     original_cmd: "git log --oneline -5",
-    rtk_cmd: "rtk git log --oneline -5",
+    otk_cmd: "otk git log --oneline -5",
     input: &raw_output,    // 500 chars
     output: &filtered      // 20 chars
 )
@@ -204,7 +204,7 @@ SQLite INSERT:
   • savings_pct: 96.0
   • timestamp: now()
 
-Database: ~/.local/share/rtk/history.db
+Database: ~/.local/share/otk/history.db
 ```
 
 ### Verbosity Levels
@@ -598,7 +598,7 @@ pub fn run(command: &GoCommand, verbose: u8) -> Result<()> {
 **Why Sub-Enum?**
 - `go test/build/vet` are semantically related (core Go toolchain)
 - Mirrors existing git/cargo patterns (consistency)
-- Natural CLI: `rtk go test` not `rtk gotest`
+- Natural CLI: `otk go test` not `otk gotest`
 
 **Why golangci-lint Standalone?**
 - Third-party tool (not core Go toolchain)
@@ -667,7 +667,7 @@ fn test_go_test_ndjson_interleaved() {
 │              Python/Go Module Overhead Benchmarks                      │
 └────────────────────────────────────────────────────────────────────────┘
 
-Command                 Raw Time    rtk Time    Overhead    Savings
+Command                 Raw Time    otk Time    Overhead    Savings
 ─────────────────────────────────────────────────────────────────────────
 
 ruff check              850ms       862ms       +12ms       83%
@@ -803,7 +803,7 @@ Flow:
    INSERT INTO commands (
        timestamp,      -- RFC3339 format
        original_cmd,   -- "git log --oneline -5"
-       rtk_cmd,        -- "rtk git log --oneline -5"
+       otk_cmd,        -- "otk git log --oneline -5"
        input_tokens,   -- 125
        output_tokens,  -- 5
        saved_tokens,   -- 120
@@ -815,7 +815,7 @@ Flow:
 
 4. STORAGE
    ───────
-   Database: ~/.local/share/rtk/history.db
+   Database: ~/.local/share/otk/history.db
 
    Schema:
    ┌─────────────────────────────────────────┐
@@ -824,7 +824,7 @@ Flow:
    │ id              INTEGER PRIMARY KEY     │
    │ timestamp       TEXT NOT NULL           │
    │ original_cmd    TEXT NOT NULL           │
-   │ rtk_cmd         TEXT NOT NULL           │
+   │ otk_cmd         TEXT NOT NULL           │
    │ input_tokens    INTEGER NOT NULL        │
    │ output_tokens   INTEGER NOT NULL        │
    │ saved_tokens    INTEGER NOT NULL        │
@@ -849,7 +849,7 @@ Flow:
 
 6. REPORTING (gain.rs)
    ────────
-   $ rtk gain
+   $ otk gain
 
    Query:
    SELECT
@@ -871,9 +871,9 @@ Flow:
    │ Total exec time:    8m50s (573ms)   │
    │                                      │
    │ Top commands:                       │
-   │   • rtk git status    (234 uses)    │
-   │   • rtk lint          (156 uses)    │
-   │   • rtk test          (89 uses)     │
+   │   • otk git status    (234 uses)    │
+   │   • otk lint          (156 uses)    │
+   │   • otk test          (89 uses)     │
    └──────────────────────────────────────┘
 
    Note: Time column shows average execution
@@ -1006,7 +1006,7 @@ Exit Codes:
 │ Code    │ Meaning                                              │
 ├─────────┼──────────────────────────────────────────────────────┤
 │ 0       │ Success                                              │
-│ 1       │ rtk internal error (parsing, filtering, etc.)        │
+│ 1       │ otk internal error (parsing, filtering, etc.)        │
 │ N       │ Preserved exit code from underlying tool            │
 │         │ (e.g., git returns 128, lint returns 1)             │
 └─────────┴──────────────────────────────────────────────────────┘
@@ -1037,7 +1037,7 @@ Modules with Exit Code Preservation:
 
 1. User Settings (config.toml)
    ───────────────────────────
-   Location: ~/.config/rtk/config.toml
+   Location: ~/.config/otk/config.toml
 
    Format:
    [general]
@@ -1047,21 +1047,21 @@ Modules with Exit Code Preservation:
 
    Loaded by: config.rs (main.rs:650-656)
 
-2. LLM Integration (CLAUDE.md)
+2. LLM Integration (AGENTS.md)
    ────────────────────────────
    Locations:
-   • Global: ~/.config/rtk/CLAUDE.md
-   • Local:  ./CLAUDE.md (project-specific)
+   • Global: ~/.config/otk/AGENTS.md
+   • Local:  ./AGENTS.md (project-specific)
 
-   Purpose: Instruct LLM (Claude Code) to use rtk prefix
-   Created by: rtk init [--global]
+   Purpose: Instruct LLM (AI coding) to use otk prefix
+   Created by: otk init [--global]
 
    Template (init.rs:40-60):
-   # CLAUDE.md
-   Use `rtk` prefix for all commands:
-   - rtk git status
-   - rtk grep "pattern"
-   - rtk read file.rs
+   # AGENTS.md
+   Use `otk` prefix for all commands:
+   - otk git status
+   - otk grep "pattern"
+   - otk read file.rs
 
    Benefits: 60-90% token reduction
 ```
@@ -1070,33 +1070,33 @@ Modules with Exit Code Preservation:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                      rtk init Workflow                                 │
+│                      otk init Workflow                                 │
 └────────────────────────────────────────────────────────────────────────┘
 
-$ rtk init [--global]
+$ otk init [--global]
       ↓
-Check existing CLAUDE.md:
-  • --global? → ~/.config/rtk/CLAUDE.md
-  • else      → ./CLAUDE.md
+Check existing AGENTS.md:
+  • --global? → ~/.config/otk/AGENTS.md
+  • else      → ./AGENTS.md
       ↓
       ├─ Exists? → Warn user, ask to overwrite
       └─ Not exists? → Continue
       ↓
-Prompt: "Initialize rtk for LLM usage? [y/N]"
+Prompt: "Initialize otk for LLM usage? [y/N]"
       ↓ Yes
 Write template:
 ┌─────────────────────────────────────┐
-│ # CLAUDE.md                         │
+│ # AGENTS.md                         │
 │                                     │
-│ Use `rtk` prefix for commands:      │
-│ - rtk git status                    │
-│ - rtk lint                          │
-│ - rtk test                          │
+│ Use `otk` prefix for commands:      │
+│ - otk git status                    │
+│ - otk lint                          │
+│ - otk test                          │
 │                                     │
 │ Benefits: 60-90% token reduction    │
 └─────────────────────────────────────┘
       ↓
-Success: "✓ Initialized rtk for LLM integration"
+Success: "✓ Initialized otk for LLM integration"
 ```
 
 ---
@@ -1126,7 +1126,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
     // 4. Track token savings
     tracking::track(
         "original_command",
-        "rtk command",
+        "otk command",
         &raw_output,
         &filtered
     );
@@ -1254,12 +1254,12 @@ Binary:
 
 Runtime Overhead (estimated):
 ┌──────────────────────┬──────────────┬──────────────┐
-│ Operation            │ rtk Overhead │ Total Time   │
+│ Operation            │ otk Overhead │ Total Time   │
 ├──────────────────────┼──────────────┼──────────────┤
-│ rtk git status       │ +8ms         │ 58ms         │
-│ rtk grep "pattern"   │ +12ms        │ 145ms        │
-│ rtk read file.rs     │ +5ms         │ 15ms         │
-│ rtk lint             │ +15ms        │ 2.5s         │
+│ otk git status       │ +8ms         │ 58ms         │
+│ otk grep "pattern"   │ +12ms        │ 145ms        │
+│ otk read file.rs     │ +5ms         │ 15ms         │
+│ otk lint             │ +15ms        │ 2.5s         │
 └──────────────────────┴──────────────┴──────────────┘
 
 Note: Overhead measurements are estimates. Actual performance varies
@@ -1300,7 +1300,7 @@ cargo fmt
 
 ### Adding a New Command
 
-**Step-by-step process to add a new rtk command:**
+**Step-by-step process to add a new otk command:**
 
 #### 1. Create Module File
 
@@ -1331,7 +1331,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<()> {
     println!("{}", filtered);
 
     // Track savings
-    tracking::track("mycmd", "rtk mycmd", &raw, &filtered);
+    tracking::track("mycmd", "otk mycmd", &raw, &filtered);
 
     Ok(())
 }
@@ -1394,7 +1394,7 @@ match cli.command {
 ```bash
 # Build and test
 cargo build
-./target/debug/rtk mycmd arg1 arg2
+./target/debug/otk mycmd arg1 arg2
 
 # Run tests
 cargo test mycmd::tests
@@ -1405,12 +1405,12 @@ cargo clippy --all-targets
 
 #### 7. Document Your Command
 
-Update CLAUDE.md:
+Update AGENTS.md:
 
 ```markdown
 ### New Commands
 
-**rtk mycmd** - Description of what it does
+**otk mycmd** - Description of what it does
 - Strategy: [stats/grouping/filtering/etc.]
 - Savings: X-Y%
 - Used by: [workflow description]
@@ -1427,7 +1427,7 @@ When implementing a new command, consider:
 - [ ] **Package Manager Detection**: For JS/TS tools, use the standard detection pattern
 - [ ] **Tests**: Add unit tests for filtering logic
 - [ ] **Token Tracking**: Integrate with `tracking::track()`
-- [ ] **Documentation**: Update CLAUDE.md with token savings and use cases
+- [ ] **Documentation**: Update AGENTS.md with token savings and use cases
 
 ---
 
@@ -1465,7 +1465,7 @@ When implementing a new command, consider:
 ## Resources
 
 - **README.md**: User guide, installation, examples
-- **CLAUDE.md**: Developer documentation, module details, PR history
+- **AGENTS.md**: Developer documentation, module details, PR history
 - **Cargo.toml**: Dependencies, build profiles, package metadata
 - **src/**: Source code organized by module
 - **.github/workflows/**: CI/CD automation (multi-platform builds, releases)
@@ -1478,7 +1478,7 @@ When implementing a new command, consider:
 |------|------------|
 | **Token** | Unit of text processed by LLMs (~4 characters on average) |
 | **Filtering** | Reducing output size while preserving essential information |
-| **Proxy Pattern** | rtk sits between user and tool, transforming output |
+| **Proxy Pattern** | otk sits between user and tool, transforming output |
 | **Exit Code Preservation** | Passing through tool's exit code for CI/CD reliability |
 | **Package Manager Detection** | Identifying pnpm/yarn/npm to execute JS/TS tools correctly |
 | **Verbosity Levels** | `-v/-vv/-vvv` for progressively more debug output |
@@ -1488,4 +1488,4 @@ When implementing a new command, consider:
 
 **Last Updated**: 2026-02-22
 **Architecture Version**: 2.2
-**rtk Version**: 0.25.0
+**otk Version**: 0.25.0

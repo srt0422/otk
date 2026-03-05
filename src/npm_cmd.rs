@@ -30,7 +30,7 @@ pub fn run(args: &[String], verbose: u8, skip_env: bool) -> Result<()> {
 
     timer.track(
         &format!("npm run {}", args.join(" ")),
-        &format!("rtk npm run {}", args.join(" ")),
+        &format!("otk npm run {}", args.join(" ")),
         &raw,
         &filtered,
     );

@@ -2,9 +2,9 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in RTK, please report it to the maintainers privately:
+If you discover a security vulnerability in OTK, please report it to the maintainers privately:
 
-- **Email**: security@rtk-ai.dev (or create a private security advisory on GitHub)
+- **Email**: security@openclaw.dev (or create a private security advisory on GitHub)
 - **Response time**: We aim to acknowledge reports within 48 hours
 - **Disclosure**: We follow responsible disclosure practices (90-day embargo)
 
@@ -16,7 +16,7 @@ If you discover a security vulnerability in RTK, please report it to the maintai
 
 ## Security Review Process for Pull Requests
 
-RTK is a CLI tool that executes shell commands and handles user input. PRs from external contributors undergo enhanced security review to protect against:
+OTK is a CLI tool that executes shell commands and handles user input. PRs from external contributors undergo enhanced security review to protect against:
 
 - **Shell injection** (command execution vulnerabilities)
 - **Supply chain attacks** (malicious dependencies)
@@ -52,7 +52,7 @@ The following files are considered **high-risk** and trigger mandatory 2-reviewe
 - **`src/summary.rs`** - Command output aggregation (data exfiltration risk)
 - **`src/tracking.rs`** - SQLite database operations (privacy/telemetry concerns)
 - **`src/discover/registry.rs`** - Rewrite logic for all commands (command injection risk via rewrite rules)
-- **`hooks/rtk-rewrite.sh`** / **`.claude/hooks/rtk-rewrite.sh`** - Thin delegator hook (executes in Claude Code context, intercepts all commands)
+- **`hooks/otk-rewrite.sh`** / **`.ai-assistant/hooks/otk-rewrite.sh`** - Thin delegator hook (executes in AI coding context, intercepts all commands)
 
 ### Tier 2: Input Validation
 - **`src/pnpm_cmd.rs`** - Package name validation (prevents injection via malicious names)
@@ -83,10 +83,10 @@ The following files are considered **high-risk** and trigger mandatory 2-reviewe
 Use the comprehensive security review process:
 
 ```bash
-# If Claude Code available, run the dedicated skill:
-/rtk-pr-security <PR_NUMBER>
+# If AI coding available, run the dedicated skill:
+/otk-pr-security <PR_NUMBER>
 
-# Manual review (without Claude):
+# Manual review (without AI assistant):
 gh pr view <PR_NUMBER>
 gh pr diff <PR_NUMBER> > /tmp/pr.diff
 bash scripts/detect-dangerous-patterns.sh /tmp/pr.diff
@@ -114,7 +114,7 @@ bash scripts/detect-dangerous-patterns.sh /tmp/pr.diff
 | `SystemTime::now() > ...` | Logic bombs | Delayed malicious behavior |
 | Base64/hex strings | Obfuscation | Hides malicious URLs/commands |
 
-See [Dangerous Patterns Reference](https://github.com/rtk-ai/rtk/wiki/Dangerous-Patterns) for exploitation examples.
+See [Dangerous Patterns Reference](https://github.com/openclaw/otk/wiki/Dangerous-Patterns) for exploitation examples.
 
 ---
 
@@ -208,8 +208,8 @@ Critical vulnerabilities (remote code execution, data exfiltration) may be fast-
 
 ## Contact
 
-- **Security issues**: security@rtk-ai.dev
-- **General questions**: https://github.com/rtk-ai/rtk/discussions
+- **Security issues**: security@openclaw.dev
+- **General questions**: https://github.com/openclaw/otk/discussions
 - **Maintainers**: @FlorianBruniaux (active fork maintainer)
 
 ---

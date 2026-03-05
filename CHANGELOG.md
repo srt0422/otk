@@ -1,70 +1,70 @@
 # Changelog
 
-All notable changes to rtk (Rust Token Killer) will be documented in this file.
+All notable changes to otk (OpenClaw Token Killer) will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.26.0](https://github.com/rtk-ai/rtk/compare/v0.25.0...v0.26.0) (2026-03-05)
+## [0.26.0](https://github.com/openclaw/otk/compare/v0.25.0...v0.26.0) (2026-03-05)
 
 
 ### Features
 
-* add Claude Code skills for PR and issue triage ([#343](https://github.com/rtk-ai/rtk/issues/343)) ([6ad6ffe](https://github.com/rtk-ai/rtk/commit/6ad6ffeccee9b622013f8e1357b6ca4c94aacb59))
-* anonymous telemetry ping (1/day, opt-out) ([#334](https://github.com/rtk-ai/rtk/issues/334)) ([baff6a2](https://github.com/rtk-ai/rtk/commit/baff6a2334b155c0d68f38dba85bd8d6fe9e20af))
+* add AI coding skills for PR and issue triage ([#343](https://github.com/openclaw/otk/issues/343)) ([6ad6ffe](https://github.com/openclaw/otk/commit/6ad6ffeccee9b622013f8e1357b6ca4c94aacb59))
+* anonymous telemetry ping (1/day, opt-out) ([#334](https://github.com/openclaw/otk/issues/334)) ([baff6a2](https://github.com/openclaw/otk/commit/baff6a2334b155c0d68f38dba85bd8d6fe9e20af))
 
 
 ### Bug Fixes
 
-* curl JSON size guard ([#297](https://github.com/rtk-ai/rtk/issues/297)) + exclude_commands config ([#243](https://github.com/rtk-ai/rtk/issues/243)) ([#342](https://github.com/rtk-ai/rtk/issues/342)) ([a8d6106](https://github.com/rtk-ai/rtk/commit/a8d6106f736e049013ecb77f0f413167266dd40e))
+* curl JSON size guard ([#297](https://github.com/openclaw/otk/issues/297)) + exclude_commands config ([#243](https://github.com/openclaw/otk/issues/243)) ([#342](https://github.com/openclaw/otk/issues/342)) ([a8d6106](https://github.com/openclaw/otk/commit/a8d6106f736e049013ecb77f0f413167266dd40e))
 
 ## [Unreleased]
 
 ### Features
 
-* **hooks:** `exclude_commands` config — exclude specific commands from auto-rewrite ([#243](https://github.com/rtk-ai/rtk/issues/243))
+* **hooks:** `exclude_commands` config — exclude specific commands from auto-rewrite ([#243](https://github.com/openclaw/otk/issues/243))
 
 ### Bug Fixes
 
-* **curl:** skip JSON schema replacement when schema is larger than original payload ([#297](https://github.com/rtk-ai/rtk/issues/297))
+* **curl:** skip JSON schema replacement when schema is larger than original payload ([#297](https://github.com/openclaw/otk/issues/297))
 
-## [0.25.0](https://github.com/rtk-ai/rtk/compare/v0.24.0...v0.25.0) (2026-03-05)
+## [0.25.0](https://github.com/openclaw/otk/compare/v0.24.0...v0.25.0) (2026-03-05)
 
 
 ### Features
 
-* `rtk rewrite` — single source of truth for LLM hook rewrites ([#241](https://github.com/rtk-ai/rtk/issues/241)) ([f447a3d](https://github.com/rtk-ai/rtk/commit/f447a3d5b136dd5b1df3d5cc4969e29a68ba3f89))
+* `otk rewrite` — single source of truth for LLM hook rewrites ([#241](https://github.com/openclaw/otk/issues/241)) ([f447a3d](https://github.com/openclaw/otk/commit/f447a3d5b136dd5b1df3d5cc4969e29a68ba3f89))
 
 
 ### Bug Fixes
 
-* **find:** accept native find flags (-name, -type, etc.) ([#211](https://github.com/rtk-ai/rtk/issues/211)) ([7ac5bc4](https://github.com/rtk-ai/rtk/commit/7ac5bc4bd3942841cc1abb53399025b4fcae10c9))
+* **find:** accept native find flags (-name, -type, etc.) ([#211](https://github.com/openclaw/otk/issues/211)) ([7ac5bc4](https://github.com/openclaw/otk/commit/7ac5bc4bd3942841cc1abb53399025b4fcae10c9))
 
 ## [Unreleased]
 
 ### ⚠️ Migration Required
 
-**Hook must be updated after upgrading** (`rtk init --global`).
+**Hook must be updated after upgrading** (`otk init --global`).
 
-The Claude Code hook is now a thin delegator: all rewrite logic lives in the
-`rtk rewrite` command (single source of truth). The old hook embedded the full
+The AI coding hook is now a thin delegator: all rewrite logic lives in the
+`otk rewrite` command (single source of truth). The old hook embedded the full
 if-else mapping inline — it still works after upgrading, but won't pick up new
 commands automatically.
 
 **Upgrade path:**
 ```bash
-cargo install rtk          # upgrade binary
-rtk init --global          # replace old hook with thin delegator
+cargo install otk          # upgrade binary
+otk init --global          # replace old hook with thin delegator
 ```
 
-Running `rtk init` without `--global` updates the project-level hook only.
+Running `otk init` without `--global` updates the project-level hook only.
 Users who skip this step keep the old hook working as before — no immediate
 breakage, but future rule additions won't take effect until they migrate.
 
 ### Features
 
-* **rewrite**: add `rtk rewrite` command — single source of truth for hook rewrites ([#241](https://github.com/rtk-ai/rtk/pull/241))
-  - New `src/discover/registry.rs` handles all command → RTK mapping
+* **rewrite**: add `otk rewrite` command — single source of truth for hook rewrites ([#241](https://github.com/openclaw/otk/pull/241))
+  - New `src/discover/registry.rs` handles all command → OTK mapping
   - Hook reduced to ~50 lines (thin delegator), no duplicate logic
   - New commands automatically available in hook without hook file changes
   - Supports compound commands (`&&`, `||`, `;`, `|`, `&`) and env prefixes
@@ -76,234 +76,234 @@ breakage, but future rule additions won't take effect until they migrate.
 * +48 regression tests covering all command categories: aws, psql, Python, Go, JS/TS,
   compound operators, sudo/env prefixes, registry invariants (607 total, was 559)
 
-## [0.24.0](https://github.com/rtk-ai/rtk/compare/v0.23.0...v0.24.0) (2026-03-04)
+## [0.24.0](https://github.com/openclaw/otk/compare/v0.23.0...v0.24.0) (2026-03-04)
 
 
 ### Features
 
-* add AWS CLI and psql modules with token-optimized output ([#216](https://github.com/rtk-ai/rtk/issues/216)) ([b934466](https://github.com/rtk-ai/rtk/commit/b934466364c131de2656eefabe933965f8424e18))
-* passthrough fallback when Clap parse fails + review fixes ([#200](https://github.com/rtk-ai/rtk/issues/200)) ([772b501](https://github.com/rtk-ai/rtk/commit/772b5012ede833c3f156816f212d469560449a30))
-* **security:** add SHA-256 hook integrity verification ([f2caca3](https://github.com/rtk-ai/rtk/commit/f2caca3abc330fb45a466af6a837ed79c3b00b40))
+* add AWS CLI and psql modules with token-optimized output ([#216](https://github.com/openclaw/otk/issues/216)) ([b934466](https://github.com/openclaw/otk/commit/b934466364c131de2656eefabe933965f8424e18))
+* passthrough fallback when Clap parse fails + review fixes ([#200](https://github.com/openclaw/otk/issues/200)) ([772b501](https://github.com/openclaw/otk/commit/772b5012ede833c3f156816f212d469560449a30))
+* **security:** add SHA-256 hook integrity verification ([f2caca3](https://github.com/openclaw/otk/commit/f2caca3abc330fb45a466af6a837ed79c3b00b40))
 
 
 ### Bug Fixes
 
-* **git:** propagate exit codes in push/pull/fetch/stash/worktree ([#234](https://github.com/rtk-ai/rtk/issues/234)) ([5cfaecc](https://github.com/rtk-ai/rtk/commit/5cfaeccaba2fc6e1fe5284f57b7af7ec7c0a224d))
-* **playwright:** fix JSON parser to match real Playwright output format ([#193](https://github.com/rtk-ai/rtk/issues/193)) ([4eb6cf4](https://github.com/rtk-ai/rtk/commit/4eb6cf4b1a2333cb710970e40a96f1004d4ab0fa))
-* support additional git global options (--no-pager, --no-optional-locks, --bare, --literal-pathspecs) ([68ca712](https://github.com/rtk-ai/rtk/commit/68ca7126d45609a41dbff95e2770d58a11ebc0a3))
-* support git global options (-C, -c, --git-dir, --work-tree, --no-pager, --no-optional-locks, --bare, --literal-pathspecs) ([a6ccefe](https://github.com/rtk-ai/rtk/commit/a6ccefe8e71372b61e6e556f0d36a944d1bcbd70))
-* support git global options (-C, -c, --git-dir, --work-tree) ([982084e](https://github.com/rtk-ai/rtk/commit/982084ee34c17d2fe89ff9f4839374bf0caa2d19))
-* update version refs to 0.23.0, module count to 51, fmt upstream files ([eed0188](https://github.com/rtk-ai/rtk/commit/eed018814b141ada8140f350adc26d9f104cf368))
+* **git:** propagate exit codes in push/pull/fetch/stash/worktree ([#234](https://github.com/openclaw/otk/issues/234)) ([5cfaecc](https://github.com/openclaw/otk/commit/5cfaeccaba2fc6e1fe5284f57b7af7ec7c0a224d))
+* **playwright:** fix JSON parser to match real Playwright output format ([#193](https://github.com/openclaw/otk/issues/193)) ([4eb6cf4](https://github.com/openclaw/otk/commit/4eb6cf4b1a2333cb710970e40a96f1004d4ab0fa))
+* support additional git global options (--no-pager, --no-optional-locks, --bare, --literal-pathspecs) ([68ca712](https://github.com/openclaw/otk/commit/68ca7126d45609a41dbff95e2770d58a11ebc0a3))
+* support git global options (-C, -c, --git-dir, --work-tree, --no-pager, --no-optional-locks, --bare, --literal-pathspecs) ([a6ccefe](https://github.com/openclaw/otk/commit/a6ccefe8e71372b61e6e556f0d36a944d1bcbd70))
+* support git global options (-C, -c, --git-dir, --work-tree) ([982084e](https://github.com/openclaw/otk/commit/982084ee34c17d2fe89ff9f4839374bf0caa2d19))
+* update version refs to 0.23.0, module count to 51, fmt upstream files ([eed0188](https://github.com/openclaw/otk/commit/eed018814b141ada8140f350adc26d9f104cf368))
 
-## [0.23.0](https://github.com/rtk-ai/rtk/compare/v0.22.2...v0.23.0) (2026-02-28)
+## [0.23.0](https://github.com/openclaw/otk/compare/v0.22.2...v0.23.0) (2026-02-28)
 
 
 ### Features
 
-* add mypy command with grouped error output ([#109](https://github.com/rtk-ai/rtk/issues/109)) ([e8ef341](https://github.com/rtk-ai/rtk/commit/e8ef3418537247043808dc3c88bfd189b717a0a1))
-* **gain:** add per-project token savings with -p flag ([#128](https://github.com/rtk-ai/rtk/issues/128)) ([2b550ee](https://github.com/rtk-ai/rtk/commit/2b550eebd6219a4844488d8fde1842ba3c6dec25))
+* add mypy command with grouped error output ([#109](https://github.com/openclaw/otk/issues/109)) ([e8ef341](https://github.com/openclaw/otk/commit/e8ef3418537247043808dc3c88bfd189b717a0a1))
+* **gain:** add per-project token savings with -p flag ([#128](https://github.com/openclaw/otk/issues/128)) ([2b550ee](https://github.com/openclaw/otk/commit/2b550eebd6219a4844488d8fde1842ba3c6dec25))
 
 
 ### Bug Fixes
 
-* eliminate duplicate output when grep-ing function names from git show ([#248](https://github.com/rtk-ai/rtk/issues/248)) ([a6f65f1](https://github.com/rtk-ai/rtk/commit/a6f65f11da71936d148a2562216ab45b4c4b04a0))
-* filter docker compose hook rewrites to supported subcommands ([#245](https://github.com/rtk-ai/rtk/issues/245)) ([dbbf980](https://github.com/rtk-ai/rtk/commit/dbbf980f3ba9a51d0f7eb703e7b3c52fde2b784f)), closes [#244](https://github.com/rtk-ai/rtk/issues/244)
-* **registry:** "fi" in IGNORED_PREFIXES shadows find commands ([#246](https://github.com/rtk-ai/rtk/issues/246)) ([48965c8](https://github.com/rtk-ai/rtk/commit/48965c85d2dd274bbdcf27b11850ccd38909e6f4))
-* remove personal preferences from project CLAUDE.md ([3a8044e](https://github.com/rtk-ai/rtk/commit/3a8044ef6991b2208d904b7401975fcfcb165cdb))
-* remove personal preferences from project CLAUDE.md ([d362ad0](https://github.com/rtk-ai/rtk/commit/d362ad0e4968cfc6aa93f9ef163512a692ca5d1b))
-* remove remaining personal project reference from CLAUDE.md ([5b59700](https://github.com/rtk-ai/rtk/commit/5b597002dcd99029cb9c0da9b6d38b44021bdb3a))
-* remove remaining personal project reference from CLAUDE.md ([dc09265](https://github.com/rtk-ai/rtk/commit/dc092655fb84a7c19a477e731eed87df5ad0b89f))
-* surface build failures in go test summary ([#274](https://github.com/rtk-ai/rtk/issues/274)) ([b405e48](https://github.com/rtk-ai/rtk/commit/b405e48ca6c4be3ba702a5d9092fa4da4dff51dc))
+* eliminate duplicate output when grep-ing function names from git show ([#248](https://github.com/openclaw/otk/issues/248)) ([a6f65f1](https://github.com/openclaw/otk/commit/a6f65f11da71936d148a2562216ab45b4c4b04a0))
+* filter docker compose hook rewrites to supported subcommands ([#245](https://github.com/openclaw/otk/issues/245)) ([dbbf980](https://github.com/openclaw/otk/commit/dbbf980f3ba9a51d0f7eb703e7b3c52fde2b784f)), closes [#244](https://github.com/openclaw/otk/issues/244)
+* **registry:** "fi" in IGNORED_PREFIXES shadows find commands ([#246](https://github.com/openclaw/otk/issues/246)) ([48965c8](https://github.com/openclaw/otk/commit/48965c85d2dd274bbdcf27b11850ccd38909e6f4))
+* remove personal preferences from project CLAUDE.md ([3a8044e](https://github.com/openclaw/otk/commit/3a8044ef6991b2208d904b7401975fcfcb165cdb))
+* remove personal preferences from project CLAUDE.md ([d362ad0](https://github.com/openclaw/otk/commit/d362ad0e4968cfc6aa93f9ef163512a692ca5d1b))
+* remove remaining personal project reference from CLAUDE.md ([5b59700](https://github.com/openclaw/otk/commit/5b597002dcd99029cb9c0da9b6d38b44021bdb3a))
+* remove remaining personal project reference from CLAUDE.md ([dc09265](https://github.com/openclaw/otk/commit/dc092655fb84a7c19a477e731eed87df5ad0b89f))
+* surface build failures in go test summary ([#274](https://github.com/openclaw/otk/issues/274)) ([b405e48](https://github.com/openclaw/otk/commit/b405e48ca6c4be3ba702a5d9092fa4da4dff51dc))
 
-## [0.22.2](https://github.com/rtk-ai/rtk/compare/v0.22.1...v0.22.2) (2026-02-20)
-
-
-### Bug Fixes
-
-* **grep:** accept -n flag for grep/rg compatibility ([7d561cc](https://github.com/rtk-ai/rtk/commit/7d561cca51e4e177d353e6514a618e5bb09eebc6))
-* **playwright:** fix JSON parser and binary resolution ([#215](https://github.com/rtk-ai/rtk/issues/215)) ([461856c](https://github.com/rtk-ai/rtk/commit/461856c8fd78cce8e2d875ae878111d7cb3610cd))
-* propagate rg exit code in rtk grep for CLI parity ([#227](https://github.com/rtk-ai/rtk/issues/227)) ([f1be885](https://github.com/rtk-ai/rtk/commit/f1be88565e602d3b6777f629d417e957a62daae2)), closes [#162](https://github.com/rtk-ai/rtk/issues/162)
-
-## [0.22.1](https://github.com/rtk-ai/rtk/compare/v0.22.0...v0.22.1) (2026-02-19)
+## [0.22.2](https://github.com/openclaw/otk/compare/v0.22.1...v0.22.2) (2026-02-20)
 
 
 ### Bug Fixes
 
-* git branch creation silently swallowed by list mode ([#194](https://github.com/rtk-ai/rtk/issues/194)) ([88dc752](https://github.com/rtk-ai/rtk/commit/88dc752220dc79dfa09b871065b28ae6ef907231))
-* **git:** support multiple -m flags in git commit ([292225f](https://github.com/rtk-ai/rtk/commit/292225f2dd09bfc5274cc8b4ed92d1a519929629))
-* **git:** support multiple -m flags in git commit ([c18553a](https://github.com/rtk-ai/rtk/commit/c18553a55c1192610525a5341a183da46c59d50c))
-* **grep:** translate BRE \| alternation and strip -r flag for rg ([#206](https://github.com/rtk-ai/rtk/issues/206)) ([70d1b04](https://github.com/rtk-ai/rtk/commit/70d1b04093a3dfcc99991502f1530cbb13bae872))
-* propagate linter exit code in rtk lint ([#207](https://github.com/rtk-ai/rtk/issues/207)) ([8e826fc](https://github.com/rtk-ai/rtk/commit/8e826fc89fe7350df82ee2b1bae8104da609f2b2)), closes [#185](https://github.com/rtk-ai/rtk/issues/185)
-* smart markdown body filter for gh issue/pr view ([#188](https://github.com/rtk-ai/rtk/issues/188)) ([#214](https://github.com/rtk-ai/rtk/issues/214)) ([4208015](https://github.com/rtk-ai/rtk/commit/4208015cce757654c150f3d71ddd004d22b4dd25))
+* **grep:** accept -n flag for grep/rg compatibility ([7d561cc](https://github.com/openclaw/otk/commit/7d561cca51e4e177d353e6514a618e5bb09eebc6))
+* **playwright:** fix JSON parser and binary resolution ([#215](https://github.com/openclaw/otk/issues/215)) ([461856c](https://github.com/openclaw/otk/commit/461856c8fd78cce8e2d875ae878111d7cb3610cd))
+* propagate rg exit code in otk grep for CLI parity ([#227](https://github.com/openclaw/otk/issues/227)) ([f1be885](https://github.com/openclaw/otk/commit/f1be88565e602d3b6777f629d417e957a62daae2)), closes [#162](https://github.com/openclaw/otk/issues/162)
 
-## [0.22.0](https://github.com/rtk-ai/rtk/compare/v0.21.1...v0.22.0) (2026-02-18)
-
-
-### Features
-
-* add `rtk wc` command for compact word/line/byte counts ([#175](https://github.com/rtk-ai/rtk/issues/175)) ([393fa5b](https://github.com/rtk-ai/rtk/commit/393fa5ba2bda0eb1f8655a34084ea4c1e08070ae))
-
-## [0.21.1](https://github.com/rtk-ai/rtk/compare/v0.21.0...v0.21.1) (2026-02-17)
+## [0.22.1](https://github.com/openclaw/otk/compare/v0.22.0...v0.22.1) (2026-02-19)
 
 
 ### Bug Fixes
 
-* gh run view drops --log-failed, --log, --json flags ([#159](https://github.com/rtk-ai/rtk/issues/159)) ([d196c2d](https://github.com/rtk-ai/rtk/commit/d196c2d2df9b7a807e02ace557a4eea45cfee77d))
+* git branch creation silently swallowed by list mode ([#194](https://github.com/openclaw/otk/issues/194)) ([88dc752](https://github.com/openclaw/otk/commit/88dc752220dc79dfa09b871065b28ae6ef907231))
+* **git:** support multiple -m flags in git commit ([292225f](https://github.com/openclaw/otk/commit/292225f2dd09bfc5274cc8b4ed92d1a519929629))
+* **git:** support multiple -m flags in git commit ([c18553a](https://github.com/openclaw/otk/commit/c18553a55c1192610525a5341a183da46c59d50c))
+* **grep:** translate BRE \| alternation and strip -r flag for rg ([#206](https://github.com/openclaw/otk/issues/206)) ([70d1b04](https://github.com/openclaw/otk/commit/70d1b04093a3dfcc99991502f1530cbb13bae872))
+* propagate linter exit code in otk lint ([#207](https://github.com/openclaw/otk/issues/207)) ([8e826fc](https://github.com/openclaw/otk/commit/8e826fc89fe7350df82ee2b1bae8104da609f2b2)), closes [#185](https://github.com/openclaw/otk/issues/185)
+* smart markdown body filter for gh issue/pr view ([#188](https://github.com/openclaw/otk/issues/188)) ([#214](https://github.com/openclaw/otk/issues/214)) ([4208015](https://github.com/openclaw/otk/commit/4208015cce757654c150f3d71ddd004d22b4dd25))
 
-## [0.21.0](https://github.com/rtk-ai/rtk/compare/v0.20.1...v0.21.0) (2026-02-17)
+## [0.22.0](https://github.com/openclaw/otk/compare/v0.21.1...v0.22.0) (2026-02-18)
 
 
 ### Features
 
-* **docker:** add docker compose support ([#110](https://github.com/rtk-ai/rtk/issues/110)) ([510c491](https://github.com/rtk-ai/rtk/commit/510c491238731b71b58923a0f20443ade6df5ae7))
+* add `otk wc` command for compact word/line/byte counts ([#175](https://github.com/openclaw/otk/issues/175)) ([393fa5b](https://github.com/openclaw/otk/commit/393fa5ba2bda0eb1f8655a34084ea4c1e08070ae))
 
-## [0.20.1](https://github.com/rtk-ai/rtk/compare/v0.20.0...v0.20.1) (2026-02-17)
+## [0.21.1](https://github.com/openclaw/otk/compare/v0.21.0...v0.21.1) (2026-02-17)
 
 
 ### Bug Fixes
 
-* install to ~/.local/bin instead of /usr/local/bin (closes [#155](https://github.com/rtk-ai/rtk/issues/155)) ([#161](https://github.com/rtk-ai/rtk/issues/161)) ([0b34772](https://github.com/rtk-ai/rtk/commit/0b34772a679f3c6b5dd9609af2f6eec6d79e4a64))
+* gh run view drops --log-failed, --log, --json flags ([#159](https://github.com/openclaw/otk/issues/159)) ([d196c2d](https://github.com/openclaw/otk/commit/d196c2d2df9b7a807e02ace557a4eea45cfee77d))
 
-## [0.20.0](https://github.com/rtk-ai/rtk/compare/v0.19.0...v0.20.0) (2026-02-16)
-
-
-### Features
-
-* add hook audit mode for verifiable rewrite metrics ([#151](https://github.com/rtk-ai/rtk/issues/151)) ([70c3786](https://github.com/rtk-ai/rtk/commit/70c37867e7282ee0ccf200022ecef8c6e4ab52f4))
-
-## [0.19.0](https://github.com/rtk-ai/rtk/compare/v0.18.1...v0.19.0) (2026-02-16)
+## [0.21.0](https://github.com/openclaw/otk/compare/v0.20.1...v0.21.0) (2026-02-17)
 
 
 ### Features
 
-* tee raw output to file for LLM re-read without re-run ([#134](https://github.com/rtk-ai/rtk/issues/134)) ([a08a62b](https://github.com/rtk-ai/rtk/commit/a08a62b4e3b3c6a2ad933978b1143dcfc45cf891))
+* **docker:** add docker compose support ([#110](https://github.com/openclaw/otk/issues/110)) ([510c491](https://github.com/openclaw/otk/commit/510c491238731b71b58923a0f20443ade6df5ae7))
 
-## [0.18.1](https://github.com/rtk-ai/rtk/compare/v0.18.0...v0.18.1) (2026-02-15)
+## [0.20.1](https://github.com/openclaw/otk/compare/v0.20.0...v0.20.1) (2026-02-17)
 
 
 ### Bug Fixes
 
-* update ARCHITECTURE.md version to 0.18.0 ([398cb08](https://github.com/rtk-ai/rtk/commit/398cb08125410a4de11162720cf3499d3c76f12d))
-* update version references to 0.16.0 in README.md and CLAUDE.md ([ec54833](https://github.com/rtk-ai/rtk/commit/ec54833621c8ca666735e1a08ed5583624b250c1))
-* update version references to 0.18.0 in docs ([c73ed47](https://github.com/rtk-ai/rtk/commit/c73ed470a79ab9e4771d2ad65394859e672b4123))
+* install to ~/.local/bin instead of /usr/local/bin (closes [#155](https://github.com/openclaw/otk/issues/155)) ([#161](https://github.com/openclaw/otk/issues/161)) ([0b34772](https://github.com/openclaw/otk/commit/0b34772a679f3c6b5dd9609af2f6eec6d79e4a64))
 
-## [0.18.0](https://github.com/rtk-ai/rtk/compare/v0.17.0...v0.18.0) (2026-02-15)
+## [0.20.0](https://github.com/openclaw/otk/compare/v0.19.0...v0.20.0) (2026-02-16)
 
 
 ### Features
 
-* **gain:** colored dashboard with efficiency meter and impact bars ([#129](https://github.com/rtk-ai/rtk/issues/129)) ([606b86e](https://github.com/rtk-ai/rtk/commit/606b86ed43902dc894e6f1711f6fe7debedc2530))
+* add hook audit mode for verifiable rewrite metrics ([#151](https://github.com/openclaw/otk/issues/151)) ([70c3786](https://github.com/openclaw/otk/commit/70c37867e7282ee0ccf200022ecef8c6e4ab52f4))
 
-## [0.17.0](https://github.com/rtk-ai/rtk/compare/v0.16.0...v0.17.0) (2026-02-15)
-
-
-### Features
-
-* **cargo:** add cargo nextest support with failures-only output ([#107](https://github.com/rtk-ai/rtk/issues/107)) ([68fd570](https://github.com/rtk-ai/rtk/commit/68fd570f2b7d5aaae7b37b07eb24eae21542595e))
-* **hook:** handle global options before subcommands ([#99](https://github.com/rtk-ai/rtk/issues/99)) ([7401f10](https://github.com/rtk-ai/rtk/commit/7401f1099f3ef14598f11947262756e3f19fce8f))
-
-## [0.16.0](https://github.com/rtk-ai/rtk/compare/v0.15.4...v0.16.0) (2026-02-14)
+## [0.19.0](https://github.com/openclaw/otk/compare/v0.18.1...v0.19.0) (2026-02-16)
 
 
 ### Features
 
-* **python:** add lint dispatcher + universal format command ([#100](https://github.com/rtk-ai/rtk/issues/100)) ([4cae6b6](https://github.com/rtk-ai/rtk/commit/4cae6b6c9a4fbc91c56a99f640d217478b92e6d9))
+* tee raw output to file for LLM re-read without re-run ([#134](https://github.com/openclaw/otk/issues/134)) ([a08a62b](https://github.com/openclaw/otk/commit/a08a62b4e3b3c6a2ad933978b1143dcfc45cf891))
 
-## [0.15.4](https://github.com/rtk-ai/rtk/compare/v0.15.3...v0.15.4) (2026-02-14)
+## [0.18.1](https://github.com/openclaw/otk/compare/v0.18.0...v0.18.1) (2026-02-15)
 
 
 ### Bug Fixes
 
-* **git:** fix for issue [#82](https://github.com/rtk-ai/rtk/issues/82) ([04e6bb0](https://github.com/rtk-ai/rtk/commit/04e6bb032ccd67b51fb69e326e27eff66c934043))
-* **git:** Returns "Not a git repository" when git status is executed in a non-repo folder [#82](https://github.com/rtk-ai/rtk/issues/82) ([d4cb2c0](https://github.com/rtk-ai/rtk/commit/d4cb2c08100d04755fa776ec8000c0b9673e4370))
+* update ARCHITECTURE.md version to 0.18.0 ([398cb08](https://github.com/openclaw/otk/commit/398cb08125410a4de11162720cf3499d3c76f12d))
+* update version references to 0.16.0 in README.md and CLAUDE.md ([ec54833](https://github.com/openclaw/otk/commit/ec54833621c8ca666735e1a08ed5583624b250c1))
+* update version references to 0.18.0 in docs ([c73ed47](https://github.com/openclaw/otk/commit/c73ed470a79ab9e4771d2ad65394859e672b4123))
 
-## [0.15.3](https://github.com/rtk-ai/rtk/compare/v0.15.2...v0.15.3) (2026-02-13)
-
-
-### Bug Fixes
-
-* prevent UTF-8 panics on multi-byte characters ([#93](https://github.com/rtk-ai/rtk/issues/93)) ([155e264](https://github.com/rtk-ai/rtk/commit/155e26423d1fe2acbaed3dc1aab8c365324d53e0))
-
-## [0.15.2](https://github.com/rtk-ai/rtk/compare/v0.15.1...v0.15.2) (2026-02-13)
-
-
-### Bug Fixes
-
-* **hook:** use POSIX character classes for cross-platform grep compatibility ([#98](https://github.com/rtk-ai/rtk/issues/98)) ([4aafc83](https://github.com/rtk-ai/rtk/commit/4aafc832d4bdd438609358e2737a96bee4bb2467))
-
-## [0.15.1](https://github.com/rtk-ai/rtk/compare/v0.15.0...v0.15.1) (2026-02-12)
-
-
-### Bug Fixes
-
-* improve CI reliability and hook coverage ([#95](https://github.com/rtk-ai/rtk/issues/95)) ([ac80bfa](https://github.com/rtk-ai/rtk/commit/ac80bfa88f91dfaf562cdd786ecd3048c554e4f7))
-* **vitest:** robust JSON extraction for pnpm/dotenv prefixes ([#92](https://github.com/rtk-ai/rtk/issues/92)) ([e5adba8](https://github.com/rtk-ai/rtk/commit/e5adba8b214a6609cf1a2cda05f21bcf2a1adb94))
-
-## [0.15.0](https://github.com/rtk-ai/rtk/compare/v0.14.0...v0.15.0) (2026-02-12)
+## [0.18.0](https://github.com/openclaw/otk/compare/v0.17.0...v0.18.0) (2026-02-15)
 
 
 ### Features
 
-* add Python and Go support ([#88](https://github.com/rtk-ai/rtk/issues/88)) ([a005bb1](https://github.com/rtk-ai/rtk/commit/a005bb15c030e16b7b87062317bddf50e12c6f32))
-* **cargo:** aggregate test output into single line ([#83](https://github.com/rtk-ai/rtk/issues/83)) ([#85](https://github.com/rtk-ai/rtk/issues/85)) ([06b1049](https://github.com/rtk-ai/rtk/commit/06b10491f926f9eca4323c80d00530a1598ec649))
-* make install-local.sh self-contained ([#89](https://github.com/rtk-ai/rtk/issues/89)) ([b82ad16](https://github.com/rtk-ai/rtk/commit/b82ad168533881757f45e28826cb0c4bd4cc6f97))
+* **gain:** colored dashboard with efficiency meter and impact bars ([#129](https://github.com/openclaw/otk/issues/129)) ([606b86e](https://github.com/openclaw/otk/commit/606b86ed43902dc894e6f1711f6fe7debedc2530))
 
-## [0.14.0](https://github.com/rtk-ai/rtk/compare/v0.13.1...v0.14.0) (2026-02-12)
+## [0.17.0](https://github.com/openclaw/otk/compare/v0.16.0...v0.17.0) (2026-02-15)
 
 
 ### Features
 
-* **ci:** automate Homebrew formula update on release ([#80](https://github.com/rtk-ai/rtk/issues/80)) ([a0d2184](https://github.com/rtk-ai/rtk/commit/a0d2184bfef4d0a05225df5a83eedba3c35865b3))
+* **cargo:** add cargo nextest support with failures-only output ([#107](https://github.com/openclaw/otk/issues/107)) ([68fd570](https://github.com/openclaw/otk/commit/68fd570f2b7d5aaae7b37b07eb24eae21542595e))
+* **hook:** handle global options before subcommands ([#99](https://github.com/openclaw/otk/issues/99)) ([7401f10](https://github.com/openclaw/otk/commit/7401f1099f3ef14598f11947262756e3f19fce8f))
+
+## [0.16.0](https://github.com/openclaw/otk/compare/v0.15.4...v0.16.0) (2026-02-14)
+
+
+### Features
+
+* **python:** add lint dispatcher + universal format command ([#100](https://github.com/openclaw/otk/issues/100)) ([4cae6b6](https://github.com/openclaw/otk/commit/4cae6b6c9a4fbc91c56a99f640d217478b92e6d9))
+
+## [0.15.4](https://github.com/openclaw/otk/compare/v0.15.3...v0.15.4) (2026-02-14)
 
 
 ### Bug Fixes
 
-* add website URL (rtk-ai.app) across project metadata ([#81](https://github.com/rtk-ai/rtk/issues/81)) ([c84fa3c](https://github.com/rtk-ai/rtk/commit/c84fa3c060c7acccaedb617852938c894f30f81e))
-* update stale repo URLs from pszymkowiak/rtk to rtk-ai/rtk ([#78](https://github.com/rtk-ai/rtk/issues/78)) ([55d010a](https://github.com/rtk-ai/rtk/commit/55d010ad5eced14f525e659f9f35d051644a1246))
+* **git:** fix for issue [#82](https://github.com/openclaw/otk/issues/82) ([04e6bb0](https://github.com/openclaw/otk/commit/04e6bb032ccd67b51fb69e326e27eff66c934043))
+* **git:** Returns "Not a git repository" when git status is executed in a non-repo folder [#82](https://github.com/openclaw/otk/issues/82) ([d4cb2c0](https://github.com/openclaw/otk/commit/d4cb2c08100d04755fa776ec8000c0b9673e4370))
 
-## [0.13.1](https://github.com/rtk-ai/rtk/compare/v0.13.0...v0.13.1) (2026-02-12)
+## [0.15.3](https://github.com/openclaw/otk/compare/v0.15.2...v0.15.3) (2026-02-13)
 
 
 ### Bug Fixes
 
-* **ci:** fix release artifacts not uploading ([#73](https://github.com/rtk-ai/rtk/issues/73)) ([bb20b1e](https://github.com/rtk-ai/rtk/commit/bb20b1e9e1619e0d824eb0e0b87109f30bf4f513))
-* **ci:** fix release workflow not uploading artifacts to GitHub releases ([bd76b36](https://github.com/rtk-ai/rtk/commit/bd76b361908d10cce508aff6ac443340dcfbdd76))
+* prevent UTF-8 panics on multi-byte characters ([#93](https://github.com/openclaw/otk/issues/93)) ([155e264](https://github.com/openclaw/otk/commit/155e26423d1fe2acbaed3dc1aab8c365324d53e0))
 
-## [0.13.0](https://github.com/rtk-ai/rtk/compare/v0.12.0...v0.13.0) (2026-02-12)
-
-
-### Features
-
-* **sqlite:** add custom sqlite db location ([6e181ae](https://github.com/rtk-ai/rtk/commit/6e181aec087edb50625e08b72fe7abdadbb6c72b))
-* **sqlite:** add custom sqlite db location ([93364b5](https://github.com/rtk-ai/rtk/commit/93364b5457619201c656fc2423763fea77633f15))
-
-## [0.12.0](https://github.com/rtk-ai/rtk/compare/v0.11.0...v0.12.0) (2026-02-09)
+## [0.15.2](https://github.com/openclaw/otk/compare/v0.15.1...v0.15.2) (2026-02-13)
 
 
-### Features
+### Bug Fixes
 
-* **cargo:** add `cargo install` filtering with 80-90% token reduction ([645a773](https://github.com/rtk-ai/rtk/commit/645a773a65bb57dc2635aa405a6e2b87534491e3)), closes [#69](https://github.com/rtk-ai/rtk/issues/69)
-* **cargo:** add cargo install filtering ([447002f](https://github.com/rtk-ai/rtk/commit/447002f8ba3bbd2b398f85db19b50982df817a02))
+* **hook:** use POSIX character classes for cross-platform grep compatibility ([#98](https://github.com/openclaw/otk/issues/98)) ([4aafc83](https://github.com/openclaw/otk/commit/4aafc832d4bdd438609358e2737a96bee4bb2467))
 
-## [0.11.0](https://github.com/rtk-ai/rtk/compare/v0.10.0...v0.11.0) (2026-02-07)
+## [0.15.1](https://github.com/openclaw/otk/compare/v0.15.0...v0.15.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* improve CI reliability and hook coverage ([#95](https://github.com/openclaw/otk/issues/95)) ([ac80bfa](https://github.com/openclaw/otk/commit/ac80bfa88f91dfaf562cdd786ecd3048c554e4f7))
+* **vitest:** robust JSON extraction for pnpm/dotenv prefixes ([#92](https://github.com/openclaw/otk/issues/92)) ([e5adba8](https://github.com/openclaw/otk/commit/e5adba8b214a6609cf1a2cda05f21bcf2a1adb94))
+
+## [0.15.0](https://github.com/openclaw/otk/compare/v0.14.0...v0.15.0) (2026-02-12)
 
 
 ### Features
 
-* **init:** auto-patch settings.json for frictionless hook installation ([2db7197](https://github.com/rtk-ai/rtk/commit/2db7197e020857c02857c8ef836279c3fd660baf))
+* add Python and Go support ([#88](https://github.com/openclaw/otk/issues/88)) ([a005bb1](https://github.com/openclaw/otk/commit/a005bb15c030e16b7b87062317bddf50e12c6f32))
+* **cargo:** aggregate test output into single line ([#83](https://github.com/openclaw/otk/issues/83)) ([#85](https://github.com/openclaw/otk/issues/85)) ([06b1049](https://github.com/openclaw/otk/commit/06b10491f926f9eca4323c80d00530a1598ec649))
+* make install-local.sh self-contained ([#89](https://github.com/openclaw/otk/issues/89)) ([b82ad16](https://github.com/openclaw/otk/commit/b82ad168533881757f45e28826cb0c4bd4cc6f97))
+
+## [0.14.0](https://github.com/openclaw/otk/compare/v0.13.1...v0.14.0) (2026-02-12)
+
+
+### Features
+
+* **ci:** automate Homebrew formula update on release ([#80](https://github.com/openclaw/otk/issues/80)) ([a0d2184](https://github.com/openclaw/otk/commit/a0d2184bfef4d0a05225df5a83eedba3c35865b3))
+
+
+### Bug Fixes
+
+* add website URL (openclaw.dev) across project metadata ([#81](https://github.com/openclaw/otk/issues/81)) ([c84fa3c](https://github.com/openclaw/otk/commit/c84fa3c060c7acccaedb617852938c894f30f81e))
+* update stale repo URLs from pszymkowiak/otk to openclaw/otk ([#78](https://github.com/openclaw/otk/issues/78)) ([55d010a](https://github.com/openclaw/otk/commit/55d010ad5eced14f525e659f9f35d051644a1246))
+
+## [0.13.1](https://github.com/openclaw/otk/compare/v0.13.0...v0.13.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* **ci:** fix release artifacts not uploading ([#73](https://github.com/openclaw/otk/issues/73)) ([bb20b1e](https://github.com/openclaw/otk/commit/bb20b1e9e1619e0d824eb0e0b87109f30bf4f513))
+* **ci:** fix release workflow not uploading artifacts to GitHub releases ([bd76b36](https://github.com/openclaw/otk/commit/bd76b361908d10cce508aff6ac443340dcfbdd76))
+
+## [0.13.0](https://github.com/openclaw/otk/compare/v0.12.0...v0.13.0) (2026-02-12)
+
+
+### Features
+
+* **sqlite:** add custom sqlite db location ([6e181ae](https://github.com/openclaw/otk/commit/6e181aec087edb50625e08b72fe7abdadbb6c72b))
+* **sqlite:** add custom sqlite db location ([93364b5](https://github.com/openclaw/otk/commit/93364b5457619201c656fc2423763fea77633f15))
+
+## [0.12.0](https://github.com/openclaw/otk/compare/v0.11.0...v0.12.0) (2026-02-09)
+
+
+### Features
+
+* **cargo:** add `cargo install` filtering with 80-90% token reduction ([645a773](https://github.com/openclaw/otk/commit/645a773a65bb57dc2635aa405a6e2b87534491e3)), closes [#69](https://github.com/openclaw/otk/issues/69)
+* **cargo:** add cargo install filtering ([447002f](https://github.com/openclaw/otk/commit/447002f8ba3bbd2b398f85db19b50982df817a02))
+
+## [0.11.0](https://github.com/openclaw/otk/compare/v0.10.0...v0.11.0) (2026-02-07)
+
+
+### Features
+
+* **init:** auto-patch settings.json for frictionless hook installation ([2db7197](https://github.com/openclaw/otk/commit/2db7197e020857c02857c8ef836279c3fd660baf))
 
 ## [Unreleased]
 
 ### Added
 - **settings.json auto-patch** for frictionless hook installation
-  - Default `rtk init -g` now prompts to patch settings.json [y/N]
+  - Default `otk init -g` now prompts to patch settings.json [y/N]
   - `--auto-patch`: Patch immediately without prompting (CI/CD workflows)
   - `--no-patch`: Skip patching, print manual instructions instead
   - Automatic backup: creates `settings.json.bak` before modification
   - Idempotent: detects existing hook, skips modification if present
-  - `rtk init --show` now displays settings.json status
-- **Uninstall command** for complete RTK removal
-  - `rtk init -g --uninstall` removes hook, RTK.md, CLAUDE.md reference, and settings.json entry
+  - `otk init --show` now displays settings.json status
+- **Uninstall command** for complete OTK removal
+  - `otk init -g --uninstall` removes hook, OTK.md, CLAUDE.md reference, and settings.json entry
   - Restores clean state for fresh installation or testing
 - **Improved error handling** with detailed context messages
   - All error messages now include file paths and actionable hints
@@ -314,87 +314,87 @@ breakage, but future rule additions won't take effect until they migrate.
 - Refactored `insert_hook_entry()` to use idiomatic Rust `entry()` API
 - Simplified `hook_already_present()` logic with iterator chains
 - Improved atomic write error messages for better debugging
-## [0.10.0](https://github.com/rtk-ai/rtk/compare/v0.9.4...v0.10.0) (2026-02-07)
+## [0.10.0](https://github.com/openclaw/otk/compare/v0.9.4...v0.10.0) (2026-02-07)
 
 
 ### Features
 
-* Hook-first installation with 99.5% token reduction ([e7f80ad](https://github.com/rtk-ai/rtk/commit/e7f80ad29481393d16d19f55b3c2171a4b8b7915))
-* **init:** refactor to hook-first with slim RTK.md ([9620f66](https://github.com/rtk-ai/rtk/commit/9620f66cd64c299426958d4d3d65bd8d1a9bc92d))
+* Hook-first installation with 99.5% token reduction ([e7f80ad](https://github.com/openclaw/otk/commit/e7f80ad29481393d16d19f55b3c2171a4b8b7915))
+* **init:** refactor to hook-first with slim OTK.md ([9620f66](https://github.com/openclaw/otk/commit/9620f66cd64c299426958d4d3d65bd8d1a9bc92d))
 
-## [0.9.4](https://github.com/rtk-ai/rtk/compare/v0.9.3...v0.9.4) (2026-02-06)
-
-
-### Bug Fixes
-
-* **discover:** add cargo check support, wire RtkStatus::Passthrough, enhance rtk init ([d5f8a94](https://github.com/rtk-ai/rtk/commit/d5f8a9460421821861a32eedefc0800fb7720912))
-
-## [0.9.3](https://github.com/rtk-ai/rtk/compare/v0.9.2...v0.9.3) (2026-02-06)
+## [0.9.4](https://github.com/openclaw/otk/compare/v0.9.3...v0.9.4) (2026-02-06)
 
 
 ### Bug Fixes
 
-* P0 crashes + cargo check + dedup utilities + discover status ([05078ff](https://github.com/rtk-ai/rtk/commit/05078ff2dab0c8745b9fb44b1d462c0d32ae8d77))
-* P0 crashes + cargo check + dedup utilities + discover status ([60d2d25](https://github.com/rtk-ai/rtk/commit/60d2d252efbedaebae750b3122385b2377ab01eb))
+* **discover:** add cargo check support, wire RtkStatus::Passthrough, enhance otk init ([d5f8a94](https://github.com/openclaw/otk/commit/d5f8a9460421821861a32eedefc0800fb7720912))
 
-## [0.9.2](https://github.com/rtk-ai/rtk/compare/v0.9.1...v0.9.2) (2026-02-05)
-
-
-### Bug Fixes
-
-* **git:** accept native git flags in add command (including -A) ([2ade8fe](https://github.com/rtk-ai/rtk/commit/2ade8fe030d8b1bc2fa294aa710ed1f5f877136f))
-* **git:** accept native git flags in add command (including -A) ([40e7ead](https://github.com/rtk-ai/rtk/commit/40e7eadbaf0b89a54b63bea73014eac7cf9afb05))
-
-## [0.9.1](https://github.com/rtk-ai/rtk/compare/v0.9.0...v0.9.1) (2026-02-04)
+## [0.9.3](https://github.com/openclaw/otk/compare/v0.9.2...v0.9.3) (2026-02-06)
 
 
 ### Bug Fixes
 
-* **tsc:** show every TypeScript error instead of collapsing by code ([3df8ce5](https://github.com/rtk-ai/rtk/commit/3df8ce552585d8d0a36f9c938d381ac0bc07b220))
-* **tsc:** show every TypeScript error instead of collapsing by code ([67e8de8](https://github.com/rtk-ai/rtk/commit/67e8de8732363d111583e5b514d05e092355b97e))
+* P0 crashes + cargo check + dedup utilities + discover status ([05078ff](https://github.com/openclaw/otk/commit/05078ff2dab0c8745b9fb44b1d462c0d32ae8d77))
+* P0 crashes + cargo check + dedup utilities + discover status ([60d2d25](https://github.com/openclaw/otk/commit/60d2d252efbedaebae750b3122385b2377ab01eb))
 
-## [0.9.0](https://github.com/rtk-ai/rtk/compare/v0.8.1...v0.9.0) (2026-02-03)
+## [0.9.2](https://github.com/openclaw/otk/compare/v0.9.1...v0.9.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* **git:** accept native git flags in add command (including -A) ([2ade8fe](https://github.com/openclaw/otk/commit/2ade8fe030d8b1bc2fa294aa710ed1f5f877136f))
+* **git:** accept native git flags in add command (including -A) ([40e7ead](https://github.com/openclaw/otk/commit/40e7eadbaf0b89a54b63bea73014eac7cf9afb05))
+
+## [0.9.1](https://github.com/openclaw/otk/compare/v0.9.0...v0.9.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* **tsc:** show every TypeScript error instead of collapsing by code ([3df8ce5](https://github.com/openclaw/otk/commit/3df8ce552585d8d0a36f9c938d381ac0bc07b220))
+* **tsc:** show every TypeScript error instead of collapsing by code ([67e8de8](https://github.com/openclaw/otk/commit/67e8de8732363d111583e5b514d05e092355b97e))
+
+## [0.9.0](https://github.com/openclaw/otk/compare/v0.8.1...v0.9.0) (2026-02-03)
 
 
 ### Features
 
-* add rtk tree + fix rtk ls + audit phase 1-2 ([278cc57](https://github.com/rtk-ai/rtk/commit/278cc5700bc39770841d157f9c53161f8d62df1e))
-* audit phase 3 + tracking validation + rtk learn ([7975624](https://github.com/rtk-ai/rtk/commit/7975624d0a83c44dfeb073e17fd07dbc62dc8329))
-* **git:** add fallback passthrough for unsupported subcommands ([32bbd02](https://github.com/rtk-ai/rtk/commit/32bbd025345872e46f67e8c999ecc6f71891856b))
-* **grep:** add extra args passthrough (-i, -A/-B/-C, etc.) ([a240d1a](https://github.com/rtk-ai/rtk/commit/a240d1a1ee0d94c178d0c54b411eded6c7839599))
-* **pnpm:** add fallback passthrough for unsupported subcommands ([614ff5c](https://github.com/rtk-ai/rtk/commit/614ff5c13f526f537231aaa9fa098763822b4ee0))
-* **read:** add stdin support via "-" path ([060c38b](https://github.com/rtk-ai/rtk/commit/060c38b3c1ab29070c16c584ea29da3d5ca28f3d))
-* rtk tree + fix rtk ls + full audit (phase 1-2-3) ([cb83da1](https://github.com/rtk-ai/rtk/commit/cb83da104f7beba3035225858d7f6eb2979d950c))
+* add otk tree + fix otk ls + audit phase 1-2 ([278cc57](https://github.com/openclaw/otk/commit/278cc5700bc39770841d157f9c53161f8d62df1e))
+* audit phase 3 + tracking validation + otk learn ([7975624](https://github.com/openclaw/otk/commit/7975624d0a83c44dfeb073e17fd07dbc62dc8329))
+* **git:** add fallback passthrough for unsupported subcommands ([32bbd02](https://github.com/openclaw/otk/commit/32bbd025345872e46f67e8c999ecc6f71891856b))
+* **grep:** add extra args passthrough (-i, -A/-B/-C, etc.) ([a240d1a](https://github.com/openclaw/otk/commit/a240d1a1ee0d94c178d0c54b411eded6c7839599))
+* **pnpm:** add fallback passthrough for unsupported subcommands ([614ff5c](https://github.com/openclaw/otk/commit/614ff5c13f526f537231aaa9fa098763822b4ee0))
+* **read:** add stdin support via "-" path ([060c38b](https://github.com/openclaw/otk/commit/060c38b3c1ab29070c16c584ea29da3d5ca28f3d))
+* otk tree + fix otk ls + full audit (phase 1-2-3) ([cb83da1](https://github.com/openclaw/otk/commit/cb83da104f7beba3035225858d7f6eb2979d950c))
 
 
 ### Bug Fixes
 
-* **docs:** escape HTML tags in rustdoc comments ([b13d92c](https://github.com/rtk-ai/rtk/commit/b13d92c9ea83e28e97847e0a6da696053364bbfc))
-* **find:** rewrite with ignore crate + fix json stdin + benchmark pipeline ([fcc1462](https://github.com/rtk-ai/rtk/commit/fcc14624f89a7aa9742de4e7bc7b126d6d030871))
-* **ls:** compact output (-72% tokens) + fix discover panic ([ea7cdb7](https://github.com/rtk-ai/rtk/commit/ea7cdb7a3b622f62e0a085144a637a22108ffdb7))
+* **docs:** escape HTML tags in rustdoc comments ([b13d92c](https://github.com/openclaw/otk/commit/b13d92c9ea83e28e97847e0a6da696053364bbfc))
+* **find:** rewrite with ignore crate + fix json stdin + benchmark pipeline ([fcc1462](https://github.com/openclaw/otk/commit/fcc14624f89a7aa9742de4e7bc7b126d6d030871))
+* **ls:** compact output (-72% tokens) + fix discover panic ([ea7cdb7](https://github.com/openclaw/otk/commit/ea7cdb7a3b622f62e0a085144a637a22108ffdb7))
 
-## [0.8.1](https://github.com/rtk-ai/rtk/compare/v0.8.0...v0.8.1) (2026-02-02)
+## [0.8.1](https://github.com/openclaw/otk/compare/v0.8.0...v0.8.1) (2026-02-02)
 
 
 ### Bug Fixes
 
-* allow git status to accept native flags ([a7ea143](https://github.com/rtk-ai/rtk/commit/a7ea1439fb99a9bd02292068625bed6237f6be0c))
-* allow git status to accept native flags ([a27bce8](https://github.com/rtk-ai/rtk/commit/a27bce82f09701cb9df2ed958f682ab5ac8f954e))
+* allow git status to accept native flags ([a7ea143](https://github.com/openclaw/otk/commit/a7ea1439fb99a9bd02292068625bed6237f6be0c))
+* allow git status to accept native flags ([a27bce8](https://github.com/openclaw/otk/commit/a27bce82f09701cb9df2ed958f682ab5ac8f954e))
 
-## [0.8.0](https://github.com/rtk-ai/rtk/compare/v0.7.1...v0.8.0) (2026-02-02)
+## [0.8.0](https://github.com/openclaw/otk/compare/v0.7.1...v0.8.0) (2026-02-02)
 
 
 ### Features
 
-* add comprehensive security review workflow for PRs ([1ca6e81](https://github.com/rtk-ai/rtk/commit/1ca6e81bdf16a7eab503d52b342846c3519d89ff))
-* add comprehensive security review workflow for PRs ([66101eb](https://github.com/rtk-ai/rtk/commit/66101ebb65076359a1530d8f19e11a17c268bce2))
+* add comprehensive security review workflow for PRs ([1ca6e81](https://github.com/openclaw/otk/commit/1ca6e81bdf16a7eab503d52b342846c3519d89ff))
+* add comprehensive security review workflow for PRs ([66101eb](https://github.com/openclaw/otk/commit/66101ebb65076359a1530d8f19e11a17c268bce2))
 
 ## [0.7.1](https://github.com/pszymkowiak/rtk/compare/v0.7.0...v0.7.1) (2026-02-02)
 
 
 ### Features
 
-* **execution time tracking**: Add command execution time metrics to `rtk gain` analytics
+* **execution time tracking**: Add command execution time metrics to `otk gain` analytics
   - Total execution time and average time per command displayed in summary
   - Time column in "By Command" breakdown showing average execution duration
   - Daily breakdown (`--daily`) includes time metrics per day
@@ -407,19 +407,19 @@ breakage, but future rule additions won't take effect until they migrate.
   - Tier 1: Full JSON parsing with complete structured data
   - Tier 2: Degraded parsing with regex fallback and warnings
   - Tier 3: Passthrough with truncated raw output and error markers
-  - Guarantees RTK never returns false data silently
+  - Guarantees OTK never returns false data silently
 * **migrate commands to OutputParser**: vitest, playwright, pnpm now use robust parsing
   - JSON parsing with safe fallbacks for all modern JS tooling
   - Improved error handling and debugging visibility
 * **local LLM analysis**: Add economics analysis and comprehensive test scripts
-  - `scripts/rtk-economics.sh` for token savings ROI analysis
+  - `scripts/otk-economics.sh` for token savings ROI analysis
   - `scripts/test-all.sh` with 69 assertions covering all commands
   - `scripts/test-aristote.sh` for T3 Stack project validation
 
 
 ### Bug Fixes
 
-* convert rtk ls from reimplementation to native proxy for better reliability
+* convert otk ls from reimplementation to native proxy for better reliability
 * trigger release build after release-please creates tag
 
 
@@ -439,7 +439,7 @@ breakage, but future rule additions won't take effect until they migrate.
 
 ### Bug Fixes
 
-* forward args in rtk git push/pull to support -u, remote, branch ([4bb0130](https://github.com/pszymkowiak/rtk/commit/4bb0130695ad2f5d91123afac2e3303e510b240c))
+* forward args in otk git push/pull to support -u, remote, branch ([4bb0130](https://github.com/pszymkowiak/rtk/commit/4bb0130695ad2f5d91123afac2e3303e510b240c))
 
 ## [0.6.0](https://github.com/pszymkowiak/rtk/compare/v0.5.2...v0.6.0) (2026-02-01)
 
@@ -475,7 +475,7 @@ breakage, but future rule additions won't take effect until they migrate.
 
 ### Features
 
-* add comprehensive claude code economics analysis ([ec1cf9a](https://github.com/pszymkowiak/rtk/commit/ec1cf9a56dd52565516823f55f99a205cfc04558))
+* add comprehensive ai-assistant code economics analysis ([ec1cf9a](https://github.com/pszymkowiak/rtk/commit/ec1cf9a56dd52565516823f55f99a205cfc04558))
 * comprehensive economics analysis and code quality improvements ([8e72e7a](https://github.com/pszymkowiak/rtk/commit/8e72e7a8b8ac7e94e9b13958d8b6b8e9bf630660))
 
 
@@ -505,7 +505,7 @@ breakage, but future rule additions won't take effect until they migrate.
 
 ### Features
 
-* add --quota flag to rtk gain with tier-based analysis ([26b314d](https://github.com/pszymkowiak/rtk/commit/26b314d45b8b0a0c5c39fb0c17001ecbde9d97aa))
+* add --quota flag to otk gain with tier-based analysis ([26b314d](https://github.com/pszymkowiak/rtk/commit/26b314d45b8b0a0c5c39fb0c17001ecbde9d97aa))
 * add CI/CD automation (release management and automated metrics) ([22c3017](https://github.com/pszymkowiak/rtk/commit/22c3017ed5d20e5fb6531cfd7aea5e12257e3da9))
 * add GitHub CLI integration (depends on [#9](https://github.com/pszymkowiak/rtk/issues/9)) ([341c485](https://github.com/pszymkowiak/rtk/commit/341c48520792f81889543a5dc72e572976856bbb))
 * add GitHub CLI integration with token optimizations ([0f7418e](https://github.com/pszymkowiak/rtk/commit/0f7418e958b23154cb9dcf52089a64013a666972))
@@ -552,9 +552,9 @@ breakage, but future rule additions won't take effect until they migrate.
 
 ## [0.2.1] - 2026-01-29
 
-See upstream: https://github.com/pszymkowiak/rtk
+See upstream: https://github.com/pszymkowiak/otk
 
 ## Links
 
-- **Repository**: https://github.com/rtk-ai/rtk (maintained by pszymkowiak)
-- **Issues**: https://github.com/rtk-ai/rtk/issues
+- **Repository**: https://github.com/openclaw/otk (maintained by pszymkowiak)
+- **Issues**: https://github.com/openclaw/otk/issues
