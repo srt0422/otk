@@ -8,26 +8,6 @@
 
 otk filters and compresses command outputs before they reach your LLM context, saving 60-90% of tokens on common operations.
 
-## ⚠️ Important: Name Collision Warning
-
-**There are TWO different projects named "otk":**
-
-1. ✅ **This project (OpenClaw Token Killer)** - LLM token optimizer
-   - Repos: `openclaw/otk`
-   - Purpose: Reduce AI coding token consumption
-
-2. ❌ **reachingforthejack/rtk** - Rust Type Kit (DIFFERENT PROJECT)
-   - Purpose: Query Rust codebase and generate types
-   - **DO NOT install this one if you want token optimization**
-
-**How to verify you have the correct otk:**
-```bash
-otk --version   # Should show "otk 0.25.0"
-otk gain        # Should show token savings stats
-```
-
-If `otk gain` doesn't exist, you installed the wrong package. See installation instructions below.
-
 ## Token Savings (30-min AI coding Session)
 
 Typical session without otk: **~150,000 tokens**
